@@ -75,7 +75,7 @@ class YouMoney (wx.App):
 
     def OnInit2(self):
         splash = YouMoneySplashScreen(self)
-#       self.frame = splash.frame
+        # self.frame = splash.frame
         splash.Show()
 
         return True
@@ -91,11 +91,11 @@ def main():
     if sys.platform.startswith('win32'):
         filename = os.path.join(home, "youmoney.log")
         vername  = os.path.join(home, "version.dat")
-        reportfile  = os.path.join(home, "youmoney.report.txt")
+        reportfile = os.path.join(home, "youmoney.report.txt")
     else:
         filename = os.path.join(os.environ['HOME'], ".youmoney", "youmoney.log")
         vername  = os.path.join(os.environ['HOME'], ".youmoney", "verion.dat")
-        reportfile  = os.path.join(os.environ['HOME'], "youmoney.report.txt")
+        reportfile = os.path.join(os.environ['HOME'], "youmoney.report.txt")
 
     logfile.install(filename)
     # logfile.install('stdout')

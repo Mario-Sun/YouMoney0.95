@@ -1,6 +1,6 @@
 # coding: utf-8
 import os
-import hashlib
+from hashlib import md5
 from urllib import parse
 import time
 import wx
@@ -12,6 +12,10 @@ import json
 import zlib
 import socket
 from ui import logfile, storage
+
+import gettext
+
+_ = gettext.gettext
  
 socket.setdefaulttimeout(10)
 
@@ -38,6 +42,8 @@ def sumdata(data):
         m.update(d)
         start += 8086
     return m.hexdigest()
+
+
 '''
 def encrypt_file(filename):
     f = open(filename, 'rb')
@@ -88,7 +94,7 @@ class FilePost:
         data = ''.join(itemlist)
 
         content_type = 'multipart/form-data; boundary="%s"' % self.BOUNDARY
-        urlparts = urlparse.urlsplit(self.url) 
+        urlparts = parse.urlsplit(self.url)
         host = urlparts[1]
         sel = self.url[self.url.find(host) + len(host):]
         
@@ -116,7 +122,7 @@ class FilePost:
             self.data.append([name, filename, data])
 
     def encode_body(self, name, filename, data):
-        lines = [] 
+        lines = []
 
         lines.append('--' + self.BOUNDARY)
         lines.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (name, filename))
@@ -127,7 +133,6 @@ class FilePost:
         lines.append('')
 
         return self.CRLF.join(lines)
-
 
 
 class DataSync:
@@ -161,55 +166,55 @@ class DataSync:
     def query(self):
         url  = self.user_url % ('query', self.conf['user'], self.conf['password'])
 
-        resp = urllib2.urlopen(url)
+        resp = http.client.urlopen(url)
         data = resp.read()
         logfile.info('query resp:', data)
         x = json.loads(data)
 
-        if x.has_key('error'):
+        if 'error' in x:
             return 0, x
        
         if self.conf['sync_way'] == 'user' and self.conf['id'] != x['id']:
             logfile.info('sync_way: user, local id:', self.conf['id'], 'remote id:', x['id'])
-            self.conf['id'] =  x['id']
+            self.conf['id'] = x['id']
             self.conf.dump()
-            #logfile.info(self.get_conf())
+            # logfile.info(self.get_conf())
             self.status = self.ADD
             return self.status, x
 
-        #if self.conf['sync_way'] == 'user' and not x['haveconf']:
+        # if self.conf['sync_way'] == 'user' and not x['haveconf']:
         #    self.upload_conf()
 
         # return x is last version information 
-        if x['ver'] == 0 and not x.has_key('error'):
+        if x['ver'] == 0 and 'error' not in x:
             self.status = self.ADD
             return self.status, x
             
         # get local sync_ver
         if len(self.conf['sync_ver']) > 0:
             localver = int(self.conf['sync_ver'])
-        else: # not have local sync_ver
+        else:  # not have local sync_ver
             logfile.info('not found local sync_ver, remote:', x['ver'])
-            if x['ver'] > 0: # remove have sync_ver, update
+            if x['ver'] > 0:  # remove have sync_ver, update
                 self.status = self.UPDATE
                 return self.status, x
             else: # remote and local both not have sync_ver, ADD
                 self.status = self.ADD
                 return self.status, x
 
-        if x['ver'] == localver: # the same version
-            logfile.info('check md5, local db: ',self.md5val, 'remote:', x['md5'])
-            if x['md5'] == self.md5val: # the same md5, not update
+        if x['ver'] == localver:  # the same version
+            logfile.info('check md5, local db: ', self.md5val, 'remote:', x['md5'])
+            if x['md5'] == self.md5val:  # the same md5, not update
                 self.status = self.NOUPDATE
-            else: # modified, commit
+            else:  # modified, commit
                 self.status = self.COMMIT
 
-        elif x['ver'] > localver: # remote version is newer than local
-            #if x['modify']:
-            #if self.conf['sync_md5'] != self.md5val: # local modified
-            if x['modify']: # user modified on old data, conflict
+        elif x['ver'] > localver:  # remote version is newer than local
+            # if x['modify']:
+            # if self.conf['sync_md5'] != self.md5val: # local modified
+            if x['modify']:  # user modified on old data, conflict
                 self.status = self.CONFLICT
-            else: # update
+            else:  # update
                 self.status = self.UPDATE
         else:
             self.status = self.ERROR
@@ -226,12 +231,12 @@ class DataSync:
 
             errcode, ret = fp.post()
             logfile.info('file post return:', ret)
-            if errcode >= 200 and errcode < 300:
+            if 200 <= errcode < 300:
                 return json.loads(ret)
 
         elif self.status == self.UPDATE:
             url = self.url % ('getdata', self.conf['id'])
-            resp = urllib2.urlopen(url)
+            resp = http.client.urlopen(url)
             data = resp.read()
             
             logfile.info('getdata len:', len(data)) 
@@ -254,7 +259,6 @@ class DataSync:
             return True 
         return None
 
-
     def upload_conf(self):
         upkeys = ['id', 'user', 'password', 'rsa_private', 'rsa_pub', 'sync_way']
         data = {}
@@ -265,7 +269,7 @@ class DataSync:
         url = self.conf_url % ('upconf', self.conf['id'])
     
         postdata = urllib.urlencode({'data': json.dumps(data)})
-        resp = urllib2.urlopen(url, postdata)
+        resp = http.client.urlopen(url, postdata)
         s = resp.read()
         x = json.loads(s)
 
@@ -277,16 +281,15 @@ class DataSync:
 
         url  = self.user_url % ('getconf', self.conf['user'], self.conf['password'])
 
-        resp = urllib2.urlopen(url)
+        resp = http.client.urlopen(url)
         s = resp.read()
          
         data = json.loads(s)
-        if not data.has_key('error'):
+        if 'error' not in data:
             logfile.info('get conf:', data['data'])
             self.conf.load_data(data['data'])
 
         return data 
-
 
 
 def do_sync(conf, db_sync_first_time, win, alert):
@@ -295,8 +298,7 @@ def do_sync(conf, db_sync_first_time, win, alert):
     logfile.info('status:', status, resp)
 
     if status == DataSync.CONFLICT:
-        dlg2 = wx.MessageDialog(win, _('Your data modified in old version. Click YES to cancel modify and use the new version on server. No to use current local data.') + '\n' + _('Server Last Modify') + ': %d-%02d-%02d %02d:%02d:%02d' % time.localtime(resp['time'])[:6], 
-                _('Sync Data Conflict'), wx.YES_NO | wx.NO_DEFAULT| wx.ICON_INFORMATION)
+        dlg2 = wx.MessageDialog(win, _('Your data modified in old version. Click YES to cancel modify and use the new version on server. No to use current local data.') + '\n' + _('Server Last Modify') + ': %d-%02d-%02d %02d:%02d:%02d' % time.localtime(resp['time'])[:6], _('Sync Data Conflict'), wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION)
         ret2 = dlg2.ShowModal()
         if ret2 == wx.ID_YES:
             datasync.status = DataSync.UPDATE
@@ -310,7 +312,7 @@ def do_sync(conf, db_sync_first_time, win, alert):
     if db_sync_first_time == 0 and resp['ver']:
         datasync.status = DataSync.UPDATE
  
-    #if updateonly and datasync.status != DataSync.UPDATE:
+    # if updateonly and datasync.status != DataSync.UPDATE:
     #    logfile.info('update only return:', datasync.status)
     #    return 0
 
@@ -321,11 +323,11 @@ def do_sync(conf, db_sync_first_time, win, alert):
         ret3 = datasync.sync_db()
         logfile.info('sync_db:', ret3)
         if ret3:
-            if not ret3 is True: # ADD or COMMIT
+            if not ret3 is True:  # ADD or COMMIT
                 conf['sync_ver'] = str(ret3['ver'])
                 conf['sync_md5'] = datasync.md5val
                 conf.dump()
-            else: # UPDATE
+            else:  # UPDATE
                 conf['sync_ver'] = str(resp['ver'])
                 conf['sync_md5'] = resp['md5']
                 conf.dump()
@@ -363,11 +365,3 @@ def synchronization(win, alert=True):
            (status == DataSync.UPDATE or status == DataSync.COMMIT or status == DataSync.ADD):
             sql = "update verinfo set sync_first_time=%d" % int(time.time())
             win.db.execute(sql)
-
- 
-
-
- 
-
-
-

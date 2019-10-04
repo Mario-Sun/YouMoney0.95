@@ -304,15 +304,15 @@ class Category:
         return None
    
     def catelist_parent(self):
-        '''所有一级类别列表'''
+        """所有一级类别列表"""
         return {_('Payout'):self.payout_parentlist, _('Income'):self.income_parentlist}
 
     def parent_cate_id(self, catype, name):
         """查询某项类别的父类id"""
         castr = self.types[catype]
-        parent_dict  = getattr(self, castr + '_parent')
+        parent_dict = getattr(self, castr + '_parent')
 
-        if type(name) != types.IntType:
+        if not isinstance(name, types.IntType):
             catemap_dict = getattr(self, castr + '_catemap')
             return parent_dict[catemap_dict[name]]
         return parent_dict[name]
@@ -323,7 +323,7 @@ class Category:
         parent_dict = getattr(self, castr + '_parent')
         catemap_dict = getattr(self, castr + '_catemap')
  
-        if type(name) != types.IntType:
+        if not isinstance(name, types.IntType):
             cid = parent_dict[catemap_dict[name]]
         else:
             cid = name
@@ -352,7 +352,7 @@ class Category:
     def cate_subs_id(self, catype, name):
         castr = self.types[catype]
         catemap_dict = getattr(self, castr + '_catemap')
-        if type(name) == types.IntType:
+        if isinstance(name, types.IntType):
             namestr = self.idmap[name]
         else:
             namestr = name
@@ -360,7 +360,7 @@ class Category:
         ret = rela_dict[namestr]
 
         if ret:
-            return [ catemap_dict[namestr + '->' + k] for k in ret ]
+            return [catemap_dict[namestr + '->' + k] for k in ret]
         return [catemap_dict[namestr]]
 
 

@@ -13,6 +13,8 @@
 # Made docstring fit in 80 chars wide displays using pydoc.
 #
 
+from functools import reduce
+
 # for selftesting
 try:
     import fintl
@@ -265,7 +267,7 @@ def containsAny(str, set):
 def _visit_pyfiles(list, dirname, names):
     """Helper for getFilesForName()."""
     # get extension for python source files
-    if not globals().has_key('_py_ext'):
+    if '_py_ext' not in globals():
         global _py_ext
         _py_ext = [triple[0] for triple in imp.get_suffixes()
                    if triple[2] == imp.PY_SOURCE][0]
@@ -363,8 +365,7 @@ class TokenEater:
     def __call__(self, ttype, tstring, stup, etup, line):
         # dispatch
 ##        import token
-##        print >> sys.stderr, 'ttype:', token.tok_name[ttype], \
-##              'tstring:', tstring
+##        print >> sys.stderr, 'ttype:', token.tok_name[ttype], 'tstring:', tstring
         self.__state(ttype, tstring, stup[0])
 
     def __waiting(self, ttype, tstring, lineno):

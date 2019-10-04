@@ -6,7 +6,7 @@ import wx
 import wx.lib.sized_controls as sc
 import wx.lib.agw.hyperlink as hl
 import urllib
-# import urllib2
+import urllib2
 import json
 from ui import logfile
 

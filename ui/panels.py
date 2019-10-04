@@ -6,6 +6,9 @@ import wx
 import wx.gizmos as gizmos
 import wx.lib.mixins.listctrl as listmix
 from ui import logfile, statpanel, storage
+import gettext
+
+_ = gettext.gettext
 
 
 class CategoryPanel(wx.Panel):
@@ -475,7 +478,7 @@ class CycleListPanel(wx.Panel):
 
         cyclelist = []
         for k in storage.cycles:
-            if type(k) != types.IntType:
+            if not isinstance(k, types.IntType):
                 cyclelist.append(k)
         cyclelist.reverse()
 

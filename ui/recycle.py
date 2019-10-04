@@ -44,7 +44,7 @@ class RecordCycle:
              
             if data['lasttime'] > 0:
                 k = str(datestart) + '_' + str(data['id'])
-                if not cycleitems.has_key(k):
+                if k not in cycleitems:
                     cycleitems[k] = 0
 
             # pprint.pprint(cycleitems)
@@ -59,12 +59,12 @@ class RecordCycle:
                         dateck = self.addfunc[addtime](dateck)
                         continue
 
-                if ck not in  cycleitems:
+                if ck not in cycleitems:
                     # print 'cycle add:', ck
                     sql = "insert into capital(category,num,ctime,year,month,day,payway,type,cycle,explain) values (?,?,?,?,?,?,?,?,?,?)"
-                    self.db.execute_param(sql, (data['category'], data['num'], int(time.time()), 
-                            dateck.year, dateck.month, dateck.day,
-                            data['payway'], data['type'], data['id'], data['explain'],))
+                    self.db.execute_param(sql, (data['category'], data['num'], int(time.time()),  dateck.year,
+                                                dateck.month, dateck.day, data['payway'], data['type'], data['id'],
+                                                data['explain'],))
                     sql = "update recycle set lasttime=%d" % (int(time.time()))
                     self.db.execute(sql)
                     changes += 1

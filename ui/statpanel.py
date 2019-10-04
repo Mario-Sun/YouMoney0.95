@@ -3,6 +3,9 @@ import wx.adv
 import datetime
 from ui import logfile
 from ui import drawstat
+import gettext
+
+_ = gettext.gettext
 
 
 class StatPanel (wx.Panel):
@@ -16,16 +19,16 @@ class StatPanel (wx.Panel):
 
         box = wx.BoxSizer(wx.HORIZONTAL)
         tday = datetime.date.today()
-        items = [ str(x) for x in range(2009, 2020) ]
+        items = [str(x) for x in range(2009, 2020)]
         tmto = wx.DateTime()
         tmto.Set(tday.day, tday.month-1, tday.year)
         tmfrom = wx.DateTime()
         tmfrom.Set(1, tday.month-1, tday.year)
         self.fromdate = wx.adv.DatePickerCtrl(self, dt=tmfrom, size=(90, -1),
-                            style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
+                                              style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
 
         self.todate   = wx.adv.DatePickerCtrl(self, dt=tmto, size=(90, -1),
-                            style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
+                                              style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
 
         box.Add(wx.StaticText(self, -1, _('Date Start:'), (8, 10)), 0, wx.ALIGN_CENTER)
         box.Add(self.fromdate, 0, wx.EXPAND)
@@ -128,10 +131,10 @@ class StatPanel (wx.Panel):
                 sql = prefixsql + "where year=%d and month=%d and day>=%d %s" % (fromyear, frommonth, fromday, endsql)
                 sqls.append(sql)
                 
-                if len(years) <= 1: # one year, multip month, entire months
+                if len(years) <= 1:  # one year, multip month, entire months
                     sql = prefixsql + "where year>=%d and year<=%d and month>%d and month<%d %s" % (fromyear, toyear, minmonth, maxmonth, endsql)
                     sqls.append(sql)
-                else: # multip year
+                else:  # multip year
                     sql = prefixsql + "where year=%d and month>%d %s" % (fromyear, frommonth, endsql)
                     sqls.append(sql)
                     sql = prefixsql + "where year=%d and month<%d %s" % (toyear, tomonth, endsql)
@@ -161,7 +164,6 @@ class StatPanel (wx.Panel):
                 sqls.append(sql)
 
                 sql = ' union '.join(sqls) + ' order by year,month,day'
-
 
         logfile.info('stat:', sql)
         rets = frame.db.query(sql)

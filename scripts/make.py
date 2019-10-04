@@ -4,9 +4,10 @@ import sys
 import datetime
 import shutil
 import random
-import merge
+from scripts import merge
 
 dstnames = ['youmoney_zh_CN', 'youmoney_ja_JP', 'youmoney_zh_TW']
+
 
 def create_po():
     tm = datetime.datetime.now()
@@ -34,6 +35,7 @@ def create_po():
             shutil.move(dstfile, '%s.%s.%d' % (dstfile, postfix, random.randint(0, 10000)))
         merge.merge(name + '.sample', "youmoney.pot", dstfile)
 
+
 def create_mo():
     global dstnames
 
@@ -49,6 +51,7 @@ def create_mo():
         cmd = "copy %s.mo ../lang/%s/LC_MESSAGES/youmoney.mo" % (name, parts[1])
         print(cmd)
         shutil.copyfile(name + '.mo', '../lang/%s/LC_MESSAGES/youmoney.mo' % (parts[1]))
+
 
 def create_en():
     home = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -75,7 +78,6 @@ def create_en():
     cmd = "python %s %s" % ('msgfmt.py', 'youmoney_en_US')
     print(cmd)
     os.system(cmd)
-
 
     cmd = "copy youmoney_en_US.mo ../lang/en_US/LC_MESSAGES/youmoney.mo"
     print(cmd)

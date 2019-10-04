@@ -24,18 +24,21 @@ class _StringGenerator(object):
 	def __init__(self, string):
 		self.string = string
 		self.index = -1
+
 	def peek(self):
 		i = self.index + 1
 		if i < len(self.string):
 			return self.string[i]
 		else:
 			return None
+
 	def next(self):
 		self.index += 1
 		if self.index < len(self.string):
 			return self.string[self.index]
 		else:
 			raise StopIteration
+
 	def all(self):
 		return self.string
 

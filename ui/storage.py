@@ -31,7 +31,7 @@ class DBStorage:
         self.charset = 'utf-8'
         self.path = path
         # if type(path) == types.UnicodeType:
-        #    self.path = path.encode(self.charset)
+        # self.path = path.encode(self.charset)
         self.db = sqlite3.connect(self.path)
         self.version = '' 
         self.init()
@@ -136,7 +136,7 @@ class DBStorage:
         return ret 
 
     def query_one(self, sql):
-        #if type(sql) == types.UnicodeType:
+        # if type(sql) == types.UnicodeType:
         #    sql = sql.encode(self.charset, 'ignore')
  
         cur = self.db.cursor()

@@ -5,6 +5,7 @@ import sqlite3
 import base64
 import pickle
 
+
 class Dropbox:
     def __init__(self):
         if sys.platform.startswith('win32'):
@@ -27,7 +28,7 @@ class Dropbox:
         self.db = None
         
         if row:
-            self.dropboxdir = pickle.loads(base64.decodestring(row[0]))
+            self.dropboxdir = pickle.loads(base64.decodebytes(row[0]))
         else:
             self.dropboxdir = os.environ['HOME']
 

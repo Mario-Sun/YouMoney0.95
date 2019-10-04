@@ -1,23 +1,23 @@
 # coding: utf-8
 import os
 import sys
-import urlparse
-import httplib
+from urllib import parse
+import http.client
 import socket
-import urllib2
+import urllib.request
 import time
 import shutil
 import zipfile
 import select
 import traceback
-import md5
+from hashlib import md5
 import wx
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, errorcode
 import version
 from ui import logfile, config, i18n
 
-home  = os.path.dirname(os.path.abspath(sys.argv[0]))
+home = os.path.dirname(os.path.abspath(sys.argv[0]))
 cf = config.Configure()
 langdir = os.path.join(home, 'lang')
 try:
@@ -30,6 +30,7 @@ except:
 
 class BackupError (Exception):
     pass
+
 
 class InstallError (Exception):
     pass
@@ -46,6 +47,7 @@ def sumfile(filename):
     fobj.close()
     return m.hexdigest()
 
+
 class Downloader:
     def __init__(self, url, savepath, callback):
         self.url   = url
@@ -56,7 +58,7 @@ class Downloader:
         if os.path.isfile(savepath):
             self.localsize = os.path.getsize(savepath)
 
-        parts = urlparse.urlsplit(self.url)
+        parts = parse.urlsplit(self.url)
         self.host = parts[1]
         self.relurl = parts[2]
 
@@ -66,8 +68,8 @@ class Downloader:
         if self.h:
             self.h.close()
 
-        self.h = httplib.HTTP()
-        #self.h.set_debuglevel(1)
+        self.h = http.client.HTTP()
+        # self.h.set_debuglevel(1)
         self.h.connect(self.host)
         self.h.putrequest('GET', self.relurl)
         self.h.putheader('Host', self.host)
@@ -156,13 +158,13 @@ class Updater:
             self.callback.Update(50 * num, _('Download update.txt') + '...')
             logfile.info('get:', url)
             try:
-                op = urllib2.urlopen(url)
+                op = urllib.request.urlopen(url)
                 lines = op.readlines()
             except:
                 logfile.info(traceback.format_exc())
                 num += 1
                 continue
-            #logfile.info(lines)
+            # logfile.info(lines)
 
             for line in lines:
                 line = line.strip()
@@ -193,7 +195,7 @@ class Updater:
 
         prefix = 'http://youmoney.googlecode.com/files/'
         noinstallfile = prefix + 'YouMoney-noinstall-%s.zip' % (verstr)
-        srcfile = prefix + 'YouMoney-src-%s.zip' % (verstr)
+        srcfile = prefix + 'YouMoney-src-%s.zip' % verstr
 
         srcmainfile = os.path.join(self.home, 'youmoney.py')
         fileurl = srcfile
@@ -334,8 +336,7 @@ class Updater:
                 newname = fname + '.backup.' + str(time.time())
                 logfile.info('rename:', newname)
                 os.rename(fname, newname)
-         
-    
+
     def close_youmoney(self):
         maxc = 30
         issend = False
@@ -347,7 +348,7 @@ class Updater:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.setblocking(0)
                 ret = sock.connect_ex(('127.0.0.1', 9596))
-                #logfile.info('connect: ', ret) 
+                # logfile.info('connect: ', ret)
 
                 if ret in [EINPROGRESS, EALREADY, EWOULDBLOCK]:
                     checkmax = 4
@@ -397,7 +398,6 @@ class Updater:
                 sock.close()
             time.sleep(2)
 
-
     def rollback(self):
         backhome = os.path.join(self.home, 'tmp', 'backup')
 
@@ -428,10 +428,8 @@ class UpdaterApp (wx.App):
 
     def OnInit(self):
         max = 1000
-        dlg = wx.ProgressDialog(_("YouMoney Updater"), _("Updating") + "...",
-                               maximum = max,parent=None,
-                               style = wx.PD_CAN_ABORT| wx.PD_APP_MODAL
-                                | wx.PD_ELAPSED_TIME| wx.PD_REMAINING_TIME)
+        dlg = wx.ProgressDialog(_("YouMoney Updater"), _("Updating") + "...", maximum=max, parent=None,
+                                style=wx.PD_CAN_ABORT | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
 
         up = Updater(dlg)
         filepath = None

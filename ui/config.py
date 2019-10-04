@@ -2,7 +2,6 @@
 import os
 import sys
 import locale
-import types
 
 cf = None
 

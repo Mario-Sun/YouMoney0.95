@@ -3,6 +3,9 @@ import wx
 import os
 import math
 import copy
+import gettext
+
+_ = gettext.gettext
 
 
 def _ScaleBlit(bmp, dc, dst_rect):
@@ -180,7 +183,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         colors = []
         colorange = []
         nsize = int(255.0 / n)
-        for xi in xrange(0, n):
+        for xi in range(0, n):
             colorange.append(nsize * xi)
         c1 = copy.copy(colorange)
         c2 = copy.copy(colorange)
@@ -202,7 +205,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
     
         rate = 0
         lastpos = (self.x+self.r, self.y)
-        for i in xrange(0, len(self.data)):
+        for i in range(0, len(self.data)):
             rgb = colors[i]
             r, g, b = rgb
             # color   = wx.Colour(r, g, b, wx.ALPHA_OPAQUE)
@@ -259,7 +262,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
             
         # display name 
         mydata = copy.copy(self.data)
-        mydata.sort(key=lambda x:x['data'], reverse=True)
+        mydata.sort(key=lambda x: x['data'], reverse=True)
         
         xstart = self.hspacing*2 + self.r*2 + 50
         ystart = 20
@@ -267,7 +270,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         color   = wx.Colour(255, 255, 255, wx.ALPHA_OPAQUE)
         dc.SetPen(wx.Pen(color))
         
-        total = sum([ k['data'] for k in mydata ])
+        total = sum([k['data'] for k in mydata])
         dc.DrawText(_('Sum: ') + str(total) ,xstart, ystart)
         dc.DrawText(_('Surplus: ') + str(self.surplus) ,xstart+100, ystart)
 
@@ -332,7 +335,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
 
         xcount = len(self.data[0])
         ycount = 10
-        xbsize = (width  - 2 * self.spacing - labelspacing) / xcount
+        xbsize = (width - 2 * self.spacing - labelspacing) / xcount
         ybsize = (height - 2 * self.spacing - vspacing) / ycount
         xbval  = maxx / xcount
         ybval  = maxy / ycount
@@ -498,13 +501,12 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         for i in range(0, 14):
             dc.DrawLine(x1, y1, x2, y2)
 
-            if i > 0 and i < 13:
+            if 0 < i < 13:
                 dc.DrawText(str(i) + u'月', x1 + cellpadding_left, y1 + self.cellpadding_top)
 
             if i == 13:
                 dc.DrawText(u'总计', x1 + cellpadding_left, y1 + self.cellpadding_top)
 
- 
             x1 += colsize
             x2 = x1
 
@@ -564,7 +566,6 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
 
             y1 += self.lineheight
 
-
     def OnPaint(self, event):
         dc = wx.PaintDC(self)
         rect = self.GetClientRect()
@@ -572,16 +573,15 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         _ScaleBlit(self.buffer, dc, rect)
 
 
-
 def test(parent):
     data = [109900, 2378, 5231, 1771, 3499, 1000, 2342, 9982, 8283, 12314, 46786, 7863, 
             12312, 21222, 1234, 1231, 1415, 5326, 4266, 2134, 21314, 21313,
             12312, 21222, 1234, 1231, 1415, 5326, 4266]
     # win = ChartBar(parent, data)
-    data = [{'data':120, 'name':'a111'}, {'data':324, 'name':'b222'}, 
-            {'data':123, 'name':'c231'}, {'data':325, 'name':'d8989'},
-            {'data':524, 'name':u'测试1'}, {'data':800, 'name':u'发财了'},
-            {'data':233, 'name':u'呵呵'}, {'data':122, 'name':u'哈哈'}]
+    data = [{'data': 120, 'name': 'a111'}, {'data': 324, 'name': 'b222'},
+            {'data': 123, 'name': 'c231'}, {'data': 325, 'name': 'd8989'},
+            {'data': 524, 'name': u'测试1'}, {'data': 800, 'name': u'发财了'},
+            {'data': 233, 'name': u'呵呵'}, {'data': 122, 'name': u'哈哈'}]
     # win = ChartPie(nb, 300, 200, 100, data)
     win = ChartPie(parent, data)
     return win

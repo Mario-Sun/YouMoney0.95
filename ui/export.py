@@ -4,6 +4,9 @@ import datetime
 import time
 import types
 from ui.storage import catetypes, payways
+import gettext
+
+_ = gettext.gettext
 
 
 class DataExport:
@@ -34,7 +37,7 @@ class DataExport:
         one = rec[0]
         for i in range(0, len(one)):
             item = one[i]
-            if type(item) == types.UnicodeType:
+            if isinstance(item, types.UnicodeType):
                 one[i] = item.encode(self.charset)
 
         typecn = {}
@@ -45,10 +48,7 @@ class DataExport:
                             catetypes[row['type']].encode(self.charset)]) 
             else:
                 if row['id'] not in subs:
-                    rec.append([row['name'].encode(self.charset), 
-                            '', 
-                            catetypes[row['type']].encode(self.charset)]) 
- 
+                    rec.append([row['name'].encode(self.charset), '', catetypes[row['type']].encode(self.charset)])
         of = open(filename, 'w')
         wt = csv.writer(of, lineterminator='\n')
         for x in rec:
@@ -78,7 +78,7 @@ class DataExport:
         one = rec[0]
         for i in range(0, len(one)):
             item = one[i]
-            if type(item) == types.UnicodeType:
+            if isinstance(item, types.UnicodeType):
                 one[i] = item.encode(self.charset)
 
         for row in rets:
@@ -88,7 +88,7 @@ class DataExport:
                 pw = 1
             scate = cates[row['category']].encode(self.charset)
             pcate = scate
-            if parents.has_key(row['category']):
+            if row['category'] in parents:
                 pcate = cates[parents[row['category']]].encode(self.charset)
             else:
                 scate = ''
@@ -119,7 +119,7 @@ class DataImport:
         f = open(filename, 'r')
         wt = csv.reader(f)
         recs = []
-        for maincate,subcate,typen in wt:
+        for maincate, subcate, typen in wt:
             # print maincate,subcate,typen
             recs.append([unicode(maincate, self.charset), 
                          unicode(subcate, self.charset),
@@ -145,10 +145,10 @@ class DataImport:
         for i in range(1, len(recs)):
             x = recs[i]
             tid = catetypes[x[2]]
-            k  = x[0] + '_' + str(tid)
+            k   = x[0] + '_' + str(tid)
             name = x[1].encode('utf-8')
 
-            if parents.has_key(k): # have parent
+            if k in parents:  # have parent
                 pid = parents[k]
             else:
                 x0 = x[0].encode('utf-8')
@@ -174,7 +174,7 @@ class DataImport:
         wt = csv.reader(f)
         recs = []
         wt.next()
-        for maincate,subcate,money,payway,type,ctime,year,month,day,explain in wt:
+        for maincate, subcate, money, payway, type, ctime, year, month, day, explain in wt:
             recs.append([unicode(maincate, self.charset), 
                          unicode(subcate, self.charset),
                          float(money),
@@ -208,7 +208,7 @@ class DataImport:
         for i in range(1, len(recs)):
             x = recs[i]
             tid = catetypes[x[4]]
-            k  = x[0] + '_' + str(tid)
+            k   = x[0] + '_' + str(tid)
             name = x[1].encode('utf-8')
 
             if parents.has_key(k): # have parent
