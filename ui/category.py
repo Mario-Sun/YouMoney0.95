@@ -1,6 +1,9 @@
 # coding: utf-8
 import datetime
 import types
+import gettext
+
+_ = gettext.gettext
 
 
 class TreeNode:
@@ -323,7 +326,7 @@ class Category:
         parent_dict = getattr(self, castr + '_parent')
         catemap_dict = getattr(self, castr + '_catemap')
  
-        if not isinstance(name, types.IntType):
+        if not isinstance(name, int):
             cid = parent_dict[catemap_dict[name]]
         else:
             cid = name
@@ -347,12 +350,12 @@ class Category:
         return catemap_dict[name]
 
     def catemap_by_id(self, catype, cid):
-        return catestr_by_id(catype, cid)
+        return self.catestr_by_id(catype, cid)
 
     def cate_subs_id(self, catype, name):
         castr = self.types[catype]
         catemap_dict = getattr(self, castr + '_catemap')
-        if isinstance(name, types.IntType):
+        if isinstance(name, int):
             namestr = self.idmap[name]
         else:
             namestr = name

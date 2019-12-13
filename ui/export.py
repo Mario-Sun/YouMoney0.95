@@ -37,7 +37,7 @@ class DataExport:
         one = rec[0]
         for i in range(0, len(one)):
             item = one[i]
-            if isinstance(item, types.UnicodeType):
+            if isinstance(item, str):
                 one[i] = item.encode(self.charset)
 
         typecn = {}
@@ -78,7 +78,7 @@ class DataExport:
         one = rec[0]
         for i in range(0, len(one)):
             item = one[i]
-            if isinstance(item, types.UnicodeType):
+            if isinstance(item, str):
                 one[i] = item.encode(self.charset)
 
         for row in rets:

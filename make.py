@@ -5,6 +5,7 @@ import shutil
 import zipfile
 import version
 
+
 def win32_main():
     f = open("youmoney.nsi", 'r')
     lines = f.readlines()
@@ -13,7 +14,7 @@ def win32_main():
     f = open("youmoney.nsi.new", 'w')
     for line in lines:
         if line.startswith('OutFile'):
-            f.write('OutFile "YouMoney-%s.exe"\n' % (version.VERSION))
+            f.write('OutFile "YouMoney-%s.exe"\n' % version.VERSION)
         else:
             f.write(line)
 
@@ -29,17 +30,17 @@ def win32_main():
         shutil.rmtree('dist')
 
     cmd = "setup.py py2exe"
-    print cmd
+    print(cmd)
     if os.system(cmd) != 0:
-        print 'setup.py py2exe error!'
+        print('setup.py py2exe error!')
         return
     cmd = "makensis.exe youmoney.nsi"
-    print cmd
+    print(cmd)
     os.system(cmd)
     
     shutil.rmtree('build')
     # shutil.rmtree('dist')
-    newname = 'YouMoney-noinstall-%s' % (version.VERSION) 
+    newname = 'YouMoney-noinstall-%s' % version.VERSION
     if os.path.isdir(newname):
         shutil.rmtree(newname)
     shutil.move('dist', newname)
@@ -60,7 +61,7 @@ def mac_main():
 
     cmd = "/usr/local/bin/python setup.py py2app"
     if os.system(cmd) != 0:
-        print 'setup.py py2app error!'
+        print('setup.py py2app error!')
         return
  
     os.chdir('dist')
@@ -68,13 +69,13 @@ def mac_main():
     os.chdir('../')
     shutil.copy('README.rtf', 'dist')
     
-    volname = 'YouMoney-macosx10.5-%s' % (version.VERSION)
+    volname = 'YouMoney-macosx10.5-%s' % version.VERSION
     if os.path.isdir(volname):
         shutil.rmtree(volname)
 
     os.rename('dist', volname)
 
-    newname = 'YouMoney-macosx10.5-%s.dmg' % (version.VERSION)
+    newname = 'YouMoney-macosx10.5-%s.dmg' % version.VERSION
     if os.path.isfile(newname):
         os.remove(newname)
     cmd = 'hdiutil create -megabytes 50 -volname "%s" -format UDIF -srcfolder "%s" "%s"' % (volname, volname, newname)
@@ -82,7 +83,7 @@ def mac_main():
         print('create dmg error!')
         return
  
-    filename = 'YouMoney-macosx10.5-%s.dmg.zip' % (version.VERSION)
+    filename = 'YouMoney-macosx10.5-%s.dmg.zip' % version.VERSION
     if os.path.isfile(filename):
         os.remove(filename)
     z = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
@@ -96,7 +97,7 @@ def src_main():
 
     cmd = 'hg clone https://youmoney.googlecode.com/hg/ youmoney'
     os.system(cmd)
-    os.rename('youmoney', 'YouMoney-src-%s' % (version.VERSION))
+    os.rename('youmoney', 'YouMoney-src-%s' % version.VERSION)
 
 
 def debian_main():
@@ -107,8 +108,8 @@ def debian_main():
     os.system(cmd)
 
     f = open('debian/files', 'w')
-    s = 'youmoney_%s-1_i386.deb Office extra' % (version.VERSION)
-    print s
+    s = 'youmoney_%s-1_i386.deb Office extra' % version.VERSION
+    print(s)
     f.write(s)
     f.close()
     
@@ -117,7 +118,7 @@ def debian_main():
     f.close()
 
     f = open('debian/changelog', 'w')
-    s = 'youmoney (%s-1) unstable; urgency=low\n' % (version.VERSION)
+    s = 'youmoney (%s-1) unstable; urgency=low\n' % version.VERSION
     f.write(s)
     for line in lines[1:]:
         f.write(line)

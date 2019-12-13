@@ -34,7 +34,6 @@ class Task (threading.Thread):
 
     def do_update(self, task):
         update.check(task['frame'])
-
     
     def do_alert(self, task):
         evt = event.MyAlertEvent(message=task['message'], name='alert')

@@ -3,12 +3,17 @@ import os
 import sys
 import re
 import wx
+from wx import adv
 import wx.lib.sized_controls as sc
 import wx.lib.agw.hyperlink as hl
 import urllib
-import urllib2
+import urllib.request
 import json
 from ui import logfile
+
+import gettext
+
+_ = gettext.gettext
 
 
 class MySizedDialog(wx.Dialog):
@@ -22,7 +27,7 @@ class MySizedDialog(wx.Dialog):
         self.mainPanel = sc.SizedPanel(self, -1) 
     
         mysizer = wx.BoxSizer(wx.VERTICAL)
-        mysizer.Add(self.mainPanel, 1, wx.EXPAND | wx.ALL, self.GetDialogBorder())
+        mysizer.Add(self.mainPanel, 1, wx.EXPAND | wx.ALL, 0)
         self.SetSizer(mysizer)
     
         self.SetAutoLayout(True)
@@ -31,7 +36,7 @@ class MySizedDialog(wx.Dialog):
         return self.mainPanel
     
     def SetButtonSizer(self, sizer):
-        self.GetSizer().Add(sizer, 0, wx.EXPAND | wx.BOTTOM | wx.RIGHT, self.GetDialogBorder())
+        self.GetSizer().Add(sizer, 0, wx.EXPAND | wx.BOTTOM | wx.RIGHT, 0)
     
         # Temporary hack to fix button ordering problems.
         cancel = self.FindWindowById(wx.ID_CANCEL)
@@ -47,8 +52,7 @@ class IncomeDialog (MySizedDialog):
         else:
             title = _('Edit income item')
 
-        MySizedDialog.__init__(self, None, -1, title, 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         self.data = readydata
 
@@ -62,18 +66,17 @@ class IncomeDialog (MySizedDialog):
 
         tm = wx.DateTime()
         tm.Set(readydata['day'], readydata['month']-1, readydata['year'])
-        self.date = wx.GenericDatePickerCtrl(panel, dt=tm, size=(120, -1), style=wx.DP_DROPDOWN|
-                    wx.DP_SHOWCENTURY|wx.DP_ALLOWNONE)
+        self.date = adv.GenericDatePickerCtrl(panel, dt=tm, size=(120, -1), style=adv.DP_DROPDOWN | adv.DP_SHOWCENTURY | adv.DP_ALLOWNONE)
 
         wx.StaticText(panel, -1, _('Category:'))
         items = readydata['cates']
-        self.cate = wx.ComboBox(panel, -1, readydata['cate'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.cate = wx.ComboBox(panel, -1, readydata['cate'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _('Money:'))
         self.num = wx.TextCtrl(panel, -1, str(readydata['num']), size=(125, -1))
 
         wx.StaticText(panel, -1, _('Explain:'))
-        self.explain = wx.TextCtrl(panel, -1, readydata['explain'], size=(220,100), style=wx.TE_MULTILINE)
+        self.explain = wx.TextCtrl(panel, -1, readydata['explain'], size=(220, 100), style=wx.TE_MULTILINE)
 
         wx.StaticText(panel, -1, '')
         self.reuse = wx.CheckBox(panel, -1, _("Not close dialog, continue."))
@@ -85,9 +88,9 @@ class IncomeDialog (MySizedDialog):
 
     def values(self):
         num = self.num.GetValue()
-        ret = re.search(u'^[0-9]+(\.[0-9]+)?', num)
+        ret = re.search(u'^[0-9]+(\\.[0-9]+)?', num)
         if not ret:
-            ret = re.search(u'\.[0-9]+', num)
+            ret = re.search(u'\\.[0-9]+', num)
             if ret:
                 numstr = '0' + num
             else:
@@ -117,8 +120,7 @@ class PayoutDialog (MySizedDialog):
             title = _('Add payout item')
         else:
             title = _('Edit payout item')
-        MySizedDialog.__init__(self, None, -1, title, 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         self.data = readydata
         
@@ -126,24 +128,24 @@ class PayoutDialog (MySizedDialog):
         panel.SetSizerType("form")
          
         wx.StaticText(panel, -1, _('Date:'))
-        # self.date = wx.DatePickerCtrl(panel, size=(120, -1), style=wx.DP_DROPDOWN|
+        # self.date = adv.DatePickerCtrl(panel, size=(120, -1), style=adv.DP_DROPDOWN|
         tm = wx.DateTime()
         tm.Set(readydata['day'], readydata['month']-1, readydata['year'])
-        self.date = wx.GenericDatePickerCtrl(panel, dt=tm, size=(120, -1), style=wx.DP_DROPDOWN | wx.DP_SHOWCENTURY|wx.DP_ALLOWNONE)
+        self.date = adv.GenericDatePickerCtrl(panel, dt=tm, size=(120, -1), style=adv.DP_DROPDOWN | adv.DP_SHOWCENTURY | adv.DP_ALLOWNONE)
 
         wx.StaticText(panel, -1, _('Category:'))
         items = readydata['cates']
-        self.cate = wx.ComboBox(panel, -1, readydata['cate'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.cate = wx.ComboBox(panel, -1, readydata['cate'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _('Payment:'))
         items = [_('Cash'), _('Credit Card')]
-        self.pay = wx.ComboBox(panel, -1, readydata['pay'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.pay = wx.ComboBox(panel, -1, readydata['pay'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _('Money:'))
         self.num = wx.TextCtrl(panel, -1, str(readydata['num']), size=(125, -1))
 
         wx.StaticText(panel, -1, _('Explain:'))
-        self.explain = wx.TextCtrl(panel, -1, readydata['explain'], size=(220,100), style=wx.TE_MULTILINE)
+        self.explain = wx.TextCtrl(panel, -1, readydata['explain'], size=(220, 100), style=wx.TE_MULTILINE)
 
         wx.StaticText(panel, -1, '')
         self.reuse = wx.CheckBox(panel, -1, _("Not close dialog, continue."))
@@ -154,9 +156,9 @@ class PayoutDialog (MySizedDialog):
     
     def values(self):
         num = self.num.GetValue()
-        ret = re.search('^[0-9]+(\.[0-9]+)?', num)
+        ret = re.search('^[0-9]+(\\.[0-9]+)?', num)
         if not ret:
-            ret = re.search(u'\.[0-9]+', num)
+            ret = re.search(u'\\.[0-9]+', num)
             if ret:
                 numstr = '0' + num
             else:
@@ -171,7 +173,7 @@ class PayoutDialog (MySizedDialog):
                 'explain': self.explain.GetValue(),
                 'reuse': self.reuse.GetValue(),
                 'mode': self.data['mode']}
-        if self.data.has_key('id'):
+        if 'id' in self.data:
             data['id'] = self.data['id']
  
         return data
@@ -181,14 +183,14 @@ class PayoutDialog (MySizedDialog):
         self.explain.Clear()
         self.date.SetFocus()
 
+
 class CycleDialog (MySizedDialog):
     def __init__(self, parent, readydata):
         if readydata['mode'] == 'insert':
             title = _('Add cycle item')
         else:
             title = _('Edit cycle item')
-        MySizedDialog.__init__(self, None, -1, title, 
-                                style=wx.DEFAULT_DIALOG_STYLE)
+        MySizedDialog.__init__(self, None, -1, title, style=wx.DEFAULT_DIALOG_STYLE)
         self.parent = parent
         self.data = readydata
         
@@ -200,26 +202,26 @@ class CycleDialog (MySizedDialog):
 
         wx.StaticText(panel, -1, _('Type:'))
         items = readydata['types']
-        self.catetype = wx.ComboBox(panel, -1, readydata['type'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.catetype = wx.ComboBox(panel, -1, readydata['type'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         
         wx.StaticText(panel, -1, _('Category:'))
         if readydata['type'] == _('Payout'):
             items = readydata['payout_cates']
-            self.cate = wx.ComboBox(panel, -1, readydata['payout_cate'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+            self.cate = wx.ComboBox(panel, -1, readydata['payout_cate'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         else:
             items = readydata['income_cates']
-            self.cate = wx.ComboBox(panel, -1, readydata['income_cate'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+            self.cate = wx.ComboBox(panel, -1, readydata['income_cate'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
  
         wx.StaticText(panel, -1, _('Payment:'))
         items = [_('Cash'), _('Credit Card')]
-        self.pay = wx.ComboBox(panel, -1, readydata['pay'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.pay = wx.ComboBox(panel, -1, readydata['pay'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _('Money:'))
         self.num = wx.TextCtrl(panel, -1, str(readydata['num']), size=(125, -1))
 
         wx.StaticText(panel, -1, _('Cycle:'))
         items = readydata['cycles']
-        self.addtime = wx.ComboBox(panel, -1, readydata['cycle'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.addtime = wx.ComboBox(panel, -1, readydata['cycle'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _('Explain:'))
         self.explain = wx.TextCtrl(panel, -1, readydata['explain'], size=(220,100), style=wx.TE_MULTILINE)
@@ -256,9 +258,9 @@ class CycleDialog (MySizedDialog):
     
     def values(self):
         num = self.num.GetValue()
-        ret = re.search('^[0-9]+(\.[0-9]+)?', num)
+        ret = re.search('^[0-9]+(\\.[0-9]+)?', num)
         if not ret:
-            ret = re.search(u'\.[0-9]+', num)
+            ret = re.search(u'\\.[0-9]+', num)
             if ret:
                 numstr = '0' + num
             else:
@@ -275,7 +277,7 @@ class CycleDialog (MySizedDialog):
                 'explain': self.explain.GetValue(),
                 'reuse': self.reuse.GetValue(),
                 'mode': self.data['mode']}
-        if self.data.has_key('id'):
+        if 'id' in self.data:
             data['id'] = self.data['id']
  
         return data
@@ -295,22 +297,21 @@ class CategoryDialog (MySizedDialog):
         else:
             title = _('Edit Category')
 
-        MySizedDialog.__init__(self, None, -1, title, 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("form")
        
         wx.StaticText(panel, -1, _("Type:"))
         items = [_('Payout'), _('Income')]
-        self.catetype = wx.ComboBox(panel, -1, readydata['catetype'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.catetype = wx.ComboBox(panel, -1, readydata['catetype'], (90, 50), (160, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         wx.StaticText(panel, -1, _("Category:"))
         self.cate = wx.TextCtrl(panel, -1, readydata['cate'], size=(125, -1))
 
         wx.StaticText(panel, -1, _('Higher Category:'))
         items = readydata['cates'][readydata['catetype']]
-        self.upcate = wx.ComboBox(panel, -1, readydata['upcate'], (90,50), (160,-1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.upcate = wx.ComboBox(panel, -1, readydata['upcate'], (90,50), (160,-1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
 
         self.SetButtonSizer(self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL))
         self.SetMinSize(wx.Size(300, 170))
@@ -331,7 +332,7 @@ class CategoryDialog (MySizedDialog):
                 'cate': self.cate.GetValue(), 
                 'upcate': self.upcate.GetValue(),
                 'mode': self.data['mode']} 
-        if self.data.has_key('id'):
+        if 'id' in self.data:
             data['id'] = self.data['id']
  
         return data
@@ -339,14 +340,13 @@ class CategoryDialog (MySizedDialog):
 
 class UpdateDialog (MySizedDialog):
     def __init__(self, parent, version):
-        MySizedDialog.__init__(self, None, -1, _('Update'), 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, _('Update'), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("vertical")
 
-        wx.StaticText(panel, -1, _('Found new version:') + ' YouMoney-%s' % (version))
-        hl.HyperLinkCtrl(panel, wx.ID_ANY, _("Open download page"),URL="http://code.google.com/p/youmoney/")
+        wx.StaticText(panel, -1, _('Found new version:') + ' YouMoney-%s' % version)
+        hl.HyperLinkCtrl(panel, wx.ID_ANY, _("Open download page"), URL="http://code.google.com/p/youmoney/")
         wx.StaticText(panel, -1, _('Click OK to start the automatic update.'))
                 
         self.SetButtonSizer(self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL))
@@ -356,8 +356,7 @@ class UpdateDialog (MySizedDialog):
 
 class PasswordDialog (MySizedDialog):
     def __init__(self, parent):
-        MySizedDialog.__init__(self, None, -1, _('Set Password'), 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, _('Set Password'), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("form")
@@ -378,7 +377,7 @@ class PasswordDialog (MySizedDialog):
     def values(self):
         pass1 = self.pass1.GetValue()
         pass2 = self.pass2.GetValue()
-        return {'password1':pass1, 'password2':pass2}
+        return {'password1': pass1, 'password2': pass2}
 
     def set_warn(self, msg):
         self.warn.SetLabel(msg)       
@@ -386,14 +385,13 @@ class PasswordDialog (MySizedDialog):
 
 class UserCheckDialog (MySizedDialog):
     def __init__(self, parent):
-        MySizedDialog.__init__(self, None, -1, 'YouMoney ' + _('User Password'), 
-                                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        MySizedDialog.__init__(self, None, -1, 'YouMoney ' + _('User Password'), style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("form")
         
         wx.StaticText(panel, -1, "")
-        self.warn = wx.StaticText(panel, -1, style=wx.ST_NO_AUTORESIZE , size=(150, -1))
+        self.warn = wx.StaticText(panel, -1, style=wx.ST_NO_AUTORESIZE, size=(150, -1))
 
         wx.StaticText(panel, -1, _("Password: "))
         self.password = wx.TextCtrl(panel, -1, style=wx.TE_PASSWORD, size=(180, -1))
@@ -412,8 +410,7 @@ class UserCheckDialog (MySizedDialog):
 
 class ImportCateDialog (MySizedDialog):
     def __init__(self, parent):
-        MySizedDialog.__init__(self, None, -1, _('Import Category'), 
-                                style=wx.DEFAULT_DIALOG_STYLE)
+        MySizedDialog.__init__(self, None, -1, _('Import Category'), style=wx.DEFAULT_DIALOG_STYLE)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("vertical")
@@ -449,7 +446,7 @@ class ImportCateDialog (MySizedDialog):
     def OnButton(self, event):
         dlg = wx.FileDialog(
             self, message=_("Choose csv file:"), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.SAVE)
+            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -459,8 +456,7 @@ class ImportCateDialog (MySizedDialog):
 
 class ImportDataDialog (MySizedDialog):
     def __init__(self, parent):
-        MySizedDialog.__init__(self, None, -1, _('Import Data'), 
-                                style=wx.DEFAULT_DIALOG_STYLE)
+        MySizedDialog.__init__(self, None, -1, _('Import Data'), style=wx.DEFAULT_DIALOG_STYLE)
         self.parent = parent
         panel = self.GetContentsPane()
         panel.SetSizerType("vertical")
@@ -500,7 +496,7 @@ class ImportDataDialog (MySizedDialog):
     def OnButton(self, event):
         dlg = wx.FileDialog(
             self, message=_("Choose csv file:"), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.SAVE)
+            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -571,10 +567,10 @@ class UserPassDialog (MySizedDialog):
         pass2 = self.pass2.GetValue()
         if self.mode == 'modify':
             user  = self.username.GetLabel()
-            return {'username':user, 'password1':pass1, 'password2':pass2, 'oldpass': self.oldpass.GetValue()}
+            return {'username': user, 'password1': pass1, 'password2': pass2, 'oldpass': self.oldpass.GetValue()}
         else:
-            user  = self.username.GetValue()
-            return {'username':user, 'password1':pass1, 'password2':pass2}
+            user  = self.username.GetLabelText()
+            return {'username': user, 'password1': pass1, 'password2': pass2}
 
     def set_warn(self, msg):
         self.warn.SetLabel(msg)       
@@ -591,7 +587,7 @@ class SyncDialog (MySizedDialog):
         
         msg = [_('Sync will synchronous user data to server.'),
                _('Then, user can use the same data everywhere.'),
-              ]
+               ]
 
         s = '\n'.join(msg)
         wx.StaticText(panel, -1, s)
@@ -639,8 +635,7 @@ class SyncDialog (MySizedDialog):
             s = '\n'.join(msg)
  
             self.msg.SetLabel(s)
-            
- 
+
     def value(self):
         ret = self.syncway.GetSelection()
         user   = self.username.GetValue()
@@ -660,46 +655,45 @@ class SyncDialog (MySizedDialog):
 
     def create_info(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        self.msg = wx.StaticText(self.info, -1, '', size=(300, -1), style=wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
-        sizer.Add(self.msg, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        self.msg = wx.StaticText(self.info, -1, '', size=(300, -1), style=wx.ALIGN_LEFT | wx.ST_NO_AUTORESIZE)
+        sizer.Add(self.msg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
 
         staticbox = wx.StaticBox(self.info, -1, _('Exist User Login'))
         bsizer = wx.StaticBoxSizer(staticbox, wx.VERTICAL)
 
         box = wx.FlexGridSizer(0, 2, 0, 0)
         label = wx.StaticText(self.info, -1, _("Username:"))
-        box.Add(label, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        box.Add(label, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         self.username  = wx.TextCtrl(self.info, -1, self.conf['user'], size=(150, -1))
-        box.Add(self.username, 1, wx.ALIGN_CENTER|wx.ALL, 5)
+        box.Add(self.username, 1, wx.ALIGN_CENTER | wx.ALL, 5)
             
         label = wx.StaticText(self.info, -1, _("Password:"))
-        box.Add(label, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        box.Add(label, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         self.password  = wx.TextCtrl(self.info, -1, self.conf['password'], size=(150, -1), style=wx.TE_PASSWORD)
-        box.Add(self.password, 1, wx.ALIGN_CENTER|wx.ALL, 5)
+        box.Add(self.password, 1, wx.ALIGN_CENTER | wx.ALL, 5)
         
-        bsizer.Add(box, 1, wx.TOP|wx.LEFT, 0)
+        bsizer.Add(box, 1, wx.TOP | wx.LEFT, 0)
 
-        sizer.Add(bsizer, 1, wx.ALIGN_LEFT|wx.ALIGN_TOP|wx.ALL, 5)
+        sizer.Add(bsizer, 1, wx.ALIGN_LEFT | wx.ALIGN_TOP|wx.ALL, 5)
  
         self.userreg = wx.Button(self.info, -1, _('Register'), (20, 80))
-        sizer.Add(self.userreg, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        sizer.Add(self.userreg, 0, wx.ALIGN_LEFT | wx.ALL, 5)
         self.changepass = wx.Button(self.info, -1, _('Change Password'), (20, 80))
-        sizer.Add(self.changepass, 0, wx.ALIGN_LEFT|wx.ALL, 5)
+        sizer.Add(self.changepass, 0, wx.ALIGN_LEFT | wx.ALL, 5)
           
         self.info.SetSizer(sizer)
         
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, self.changepass)
         self.Bind(wx.EVT_BUTTON, self.OnUserAdd, self.userreg)
 
-
     def create_info3(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        #self.msg = wx.StaticText(self.info, -1, '', style=wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
+        # self.msg = wx.StaticText(self.info, -1, '', style=wx.ALIGN_LEFT|wx.ST_NO_AUTORESIZE)
         self.msg = wx.StaticText(self.info, -1, '', size=(300, -1), style=wx.ALIGN_LEFT)
-        sizer.Add(self.msg, 0, wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        sizer.Add(self.msg, 0, wx.ALIGN_LEFT | wx.ALL | wx.EXPAND, 5)
 
         self.changepass = wx.Button(self.info, -1, _('Change Password'), (20, 80))
-        sizer.Add(self.changepass, 1, wx.ALIGN_LEFT|wx.ALL, 5)
+        sizer.Add(self.changepass, 1, wx.ALIGN_LEFT | wx.ALL, 5)
         self.info.SetSizer(sizer)
 
         self.Bind(wx.EVT_BUTTON, self.OnChangePassword, self.changepass)
@@ -715,13 +709,12 @@ class SyncDialog (MySizedDialog):
             if vals['password1'] != vals['password2']:
                 dlg.set_warn(_('Different password.'))
                 continue
-            url = 'http://%s/sync?action=useradd&ident=%s&user=%s&pass=%s' % \
-                    (self.conf['server'], self.conf['id'], urllib.quote(vals['username']), urllib.quote(vals['password1']))
+            url = 'http://%s/sync?action=useradd&ident=%s&user=%s&pass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['password1']))
             try:
-                resp = urllib2.urlopen(url) 
+                resp = urllib.request.urlopen(url)
                 s = resp.read()
             except Exception as e:
-                wx.MessageBox(str(e), _('Error'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(str(e), _('Error'), wx.OK | wx.ICON_INFORMATION)
                 continue
             
             val = json.loads(s)
@@ -731,7 +724,7 @@ class SyncDialog (MySizedDialog):
                 dlg.set_warn(self.errors[val['status']])
                 continue
              
-            wx.MessageBox(_('User and password are successfully added!'), _('Success'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('User and password are successfully added!'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             self.conf['user'] = vals['username']
             self.conf['password'] = vals['password1']
             self.conf.dump()
@@ -750,7 +743,7 @@ class SyncDialog (MySizedDialog):
 
     def OnChangePassword(self, event):
         if not self.conf['user']:
-            wx.MessageBox(_('Not found user setting, please login or registe first.'), _('Information'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Not found user setting, please login or registe first.'), _('Information'), wx.OK | wx.ICON_INFORMATION)
             return
         dlg = UserPassDialog(self, self.conf, 'modify')
         while True:
@@ -762,11 +755,9 @@ class SyncDialog (MySizedDialog):
                 dlg.set_warn(_('Different password.'))
                 continue
 
-            url = 'http://%s/sync?action=usermodify&ident=%s&user=%s&pass=%s&newpass=%s' % \
-                    (self.conf['server'], self.conf['id'], urllib.quote(vals['username']), 
-                     urllib.quote(vals['oldpass']), urllib.quote(vals['password1']))
+            url = 'http://%s/sync?action=usermodify&ident=%s&user=%s&pass=%s&newpass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['oldpass']), urllib.request.quote(vals['password1']))
  
-            resp = urllib2.urlopen(url) 
+            resp = urllib.request.urlopen(url)
             s = resp.read()
             
             val = json.loads(s)
@@ -776,7 +767,7 @@ class SyncDialog (MySizedDialog):
                 dlg.set_warn(self.errors[val['status']])
                 continue
              
-            wx.MessageBox(_('Password successfully changed!'), _('Success'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Password successfully changed!'), _('Success'), wx.OK | wx.ICON_INFORMATION)
             self.conf['user'] = vals['username']
             self.conf['password'] = vals['password1']
             self.conf.dump()

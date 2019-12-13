@@ -24,10 +24,10 @@ class StatPanel (wx.Panel):
         tmto.Set(tday.day, tday.month-1, tday.year)
         tmfrom = wx.DateTime()
         tmfrom.Set(1, tday.month-1, tday.year)
-        self.fromdate = wx.adv.DatePickerCtrl(self, dt=tmfrom, size=(90, -1),
+        self.fromdate = wx.adv.DatePickerCtrl(self, dt=tmfrom, size=(100, -1),
                                               style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
 
-        self.todate   = wx.adv.DatePickerCtrl(self, dt=tmto, size=(90, -1),
+        self.todate   = wx.adv.DatePickerCtrl(self, dt=tmto, size=(100, -1),
                                               style=wx.adv.DP_DROPDOWN | wx.adv.DP_SHOWCENTURY)
 
         box.Add(wx.StaticText(self, -1, _('Date Start:'), (8, 10)), 0, wx.ALIGN_CENTER)
@@ -41,14 +41,14 @@ class StatPanel (wx.Panel):
         # items = [_('Payout'), _('Income'), _('Surplus')]
         items = [_('Payout'), _('Income')]
         self.default_type = items[0]
-        self.type = wx.ComboBox(self, -1, items[0], (60, 50), (80, -1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.type = wx.ComboBox(self, -1, items[0], (60, 50), (72, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         box.Add(self.type, 0, wx.EXPAND)
     
         box.Add(wx.StaticText(self, -1, _("   Category "), (8, 10)), 0, wx.ALIGN_CENTER)
         # items = self.data[self.default_type]
         # items = [_('All Categories')]
         items = self.data[_('Payout')]
-        self.category = wx.ComboBox(self, -1, items[0], (60, 50), (100, -1), items, wx.CB_DROPDOWN|wx.CB_READONLY)
+        self.category = wx.ComboBox(self, -1, items[0], (60, 50), (112, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         box.Add(self.category, 0, wx.EXPAND)
 
         box.Add(wx.StaticText(self, -1, u"  ", (8, 10)), 0, wx.ALIGN_CENTER)
@@ -202,14 +202,14 @@ class StatPanel (wx.Panel):
             if not pcate:
                 pcate = frame.category.catemap(row['type'], cate)
 
-            if catevals.has_key(pcate):
+            if pcate in catevals:
                 catevals[pcate] += row['num']
             else:
                 catevals[pcate] = row['num']
 
         data = []
         for k in catevals:
-            data.append({'data':catevals[k], 'name':k})
+            data.append({'data': catevals[k], 'name': k})
             
         self.content.draw_pie(data, surplus_val)
 

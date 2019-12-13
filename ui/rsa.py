@@ -28,7 +28,7 @@ def gcd(p, q):
     """
     if p<q: return gcd(q, p)
     if q == 0: return p
-    return gcd(q, abs(p%q))
+    return gcd(q, abs(p % q))
 
 
 def bytes2int(bytes):
@@ -61,7 +61,7 @@ def int2bytes(number):
     123456789
     """
 
-    if not (type(number) is types.LongType or type(number) is types.IntType):
+    if not isinstance(number, int):
         raise TypeError("You must pass a long or an int")
 
     string = ""
@@ -332,10 +332,10 @@ def encrypt_int(message, ekey, n):
     """Encrypts a message using encryption key 'ekey', working modulo
     n"""
 
-    if type(message) is types.IntType:
+    if isinstance(message, int):
         return encrypt_int(long(message), ekey, n)
 
-    if not type(message) is types.LongType:
+    if not isinstance(message, int):
         raise TypeError("You must pass a long or an int")
 
     if message > 0 and \
@@ -375,7 +375,7 @@ def picklechops(chops):
 def unpicklechops(string):
     """base64decodes and unpickes it's argument string into chops"""
 
-    return loads(zlib.decompress(base64.decodestring(string)))
+    return loads(zlib.decompress(base64.decodebytes(string)))
 
 
 def chopstring(message, key, n, funcref):

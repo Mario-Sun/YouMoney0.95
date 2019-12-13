@@ -37,9 +37,8 @@ class Configure:
         # is new create db file
         self.iscreate = False
         # sync_way maybe 'user/id'
-        self.datadef = {'lastdb':'', 'lang':'', #'rsa_pub':'', 'rsa_private':'', 
-                     'id':'', 'user':'', 'password':'', 'sync_way':'',
-                     'sync_ver':'', 'sync_auto': '', 'sync_md5':'', 'server':'youmoney.pythonid.com'}
+        self.datadef = {'lastdb': '', 'lang': '', #'rsa_pub':'', 'rsa_private':'',
+                     'id': '', 'user': '', 'password': '', 'sync_way': '', 'sync_ver': '', 'sync_auto': '', 'sync_md5': '', 'server': 'youmoney.pythonid.com'}
 
         self.data = None
         self.load()
@@ -63,7 +62,7 @@ class Configure:
                 if not line or line.startswith('#'):
                     continue
             
-                parts = [ x.strip() for x in line.split('=', 1) ]
+                parts = [x.strip() for x in line.split('=', 1)]
                 self.data[parts[0]] = parts[1]
 
         if not 'lang' in self.data:

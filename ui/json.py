@@ -216,7 +216,7 @@ class JsonReader(object):
         done = self._peek() == '}'
         while not done:
             key = self._read()
-            if type(key) is not types.StringType:
+            if type(key) is not bytes:
                 raise ReadException("Not a valid JSON object key (should be a string): %s" % key)
             self._eatWhitespace()
             ch = self._next()
@@ -273,7 +273,7 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("}")
-        elif ty is types.ListType or ty is types.TupleType:
+        elif ty is list or ty is tuple:
             n = len(obj)
             self._append("[")
             for item in obj:
@@ -282,7 +282,7 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("]")
-        elif ty is types.StringType or ty is types.UnicodeType:
+        elif ty is bytes or ty is str:
             self._append('"')
 	    obj = obj.replace('\\', r'\\')
             if self._escaped_forward_slash:
@@ -295,9 +295,9 @@ class JsonWriter(object):
 	    obj = obj.replace('\t', r'\t')
             self._append(obj)
             self._append('"')
-        elif ty is types.IntType or ty is types.LongType:
+        elif ty is int or ty is int:
             self._append(str(obj))
-        elif ty is types.FloatType:
+        elif ty is float:
             self._append("%f" % obj)
         elif obj is True:
             self._append("true")

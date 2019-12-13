@@ -1,5 +1,6 @@
 # coding: utf-8
 import wx
+from wx import adv
 import os
 import math
 import copy
@@ -73,7 +74,7 @@ class DoubleBufferedMixin(object):
         return False
 
     def bind_events(self):
-        self.Bind(wx.EVT_ERASE_BACKGROUND, lambda e : None)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, lambda e: None)
         self.Bind(wx.EVT_SIZE, self.OnSize)
         self.Bind(wx.EVT_PAINT, self.OnPaint)
 
@@ -156,7 +157,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         dc.SetBackground(wx.Brush(self.bgcolor))
         dc.Clear()
  
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
         # f.SetWeight(wx.FONTWEIGHT_BOLD)
         dc.SetFont(f)
 
@@ -271,8 +272,8 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         dc.SetPen(wx.Pen(color))
         
         total = sum([k['data'] for k in mydata])
-        dc.DrawText(_('Sum: ') + str(total) ,xstart, ystart)
-        dc.DrawText(_('Surplus: ') + str(self.surplus) ,xstart+100, ystart)
+        dc.DrawText(_('Sum: ') + str(total), xstart, ystart)
+        dc.DrawText(_('Surplus: ') + str(self.surplus), xstart+100, ystart)
 
         ystart += 20
 
@@ -319,7 +320,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
  
         maxy = (maxval / 10 + 1) * 10
            
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS , wx.NORMAL, wx.NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
         # f.SetWeight(wx.FONTWEIGHT_BOLD)
         dc.SetFont(f)
 
@@ -454,7 +455,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         dc.Clear()
         rect = self.GetClientRect()
 
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
         dc.SetFont(f)
         # 说明            
         x1 = self.margin_left
@@ -523,7 +524,6 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
             dc.DrawText(str(self.data[i][0]) + u'年', x1, y1)
             y1 += self.lineheight
 
-        
         cellpadding_left = 5
         x1 = self.margin_left + colsize + cellpadding_left
         y1 = self.margin_top + self.lineheight + 5

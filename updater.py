@@ -1,10 +1,10 @@
 # coding: utf-8
 import os
 import sys
-from urllib import parse
 import http.client
 import socket
 import urllib.request
+import urllib.parse
 import time
 import shutil
 import zipfile
@@ -16,6 +16,8 @@ from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, errorcode
 import version
 from ui import logfile, config, i18n
+
+
 
 home = os.path.dirname(os.path.abspath(sys.argv[0]))
 cf = config.Configure()
@@ -58,7 +60,7 @@ class Downloader:
         if os.path.isfile(savepath):
             self.localsize = os.path.getsize(savepath)
 
-        parts = parse.urlsplit(self.url)
+        parts = urllib.parse.urlsplit(self.url)
         self.host = parts[1]
         self.relurl = parts[2]
 

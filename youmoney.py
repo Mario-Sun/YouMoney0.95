@@ -4,17 +4,18 @@
 # License: GPL
 # Author: zhaoweiakid <zhaoweikid@163.com>
 # 感谢 Jacky MA <jackyma1981@gmail.com> 制作的日文支持
-# Mario Sun @2019-09-27 Starting...
+# Mario Sun @2019-09-27
 # Python 3.7.4
 import os
 import sys
-import urllib
+import urllib.request
+import urllib.parse
 import wx
 from wx import adv
 import ui
 import traceback
 import version
-from ui import window, logfile, update, task, loader
+from ui import window, logfile, update, task, loader, storage
 
 ver = int('%d%02d%02d' % wx.VERSION[:3])
 if ver < 20809:
@@ -39,8 +40,9 @@ class YouMoneySplashScreen (adv.SplashScreen):
         global home
         self.parent = parent
         bmp = loader.load_bitmap(os.path.join(home, 'images', 'splash.png'))
-        wx.SplashScreen.__init__(self, bmp, wx.SPLASH_CENTER_ON_SCREEN | wx.SPLASH_TIMEOUT, 5000, None, -1)
-        self.fc = wx.FutureCall(100, self.ShowMain)
+        adv.SplashScreen.__init__(self, bmp, adv.SPLASH_CENTER_ON_SCREEN | adv.SPLASH_TIMEOUT, 5000, None, -1)
+        wx.Yield()
+        self.fc = wx.FutureCall(100, self.show_main)
 
     def on_close(self, event):
         event.Skip()
@@ -48,7 +50,7 @@ class YouMoneySplashScreen (adv.SplashScreen):
 
         if self.fc.IsRunning():
             self.fc.Stop()
-            self.ShowMain()
+            self.show_main()
 
     def show_main(self):
         global cf
@@ -117,9 +119,9 @@ def main():
         f.close()
 
         try:
-            data = urllib.urlencode({'user': str(ui.storage.name),
-                                     'sys': ui.update.system_version(),
-                                     'version': str(version.VERSION), 'info':s})
+            data = urllib.parse.urlencode({'user': str(ui.storage.name),
+                                           'sys': ui.update.system_version(),
+                                           'version': str(version.VERSION), 'info': s})
             resp = urllib.request.urlopen('http://%s/report' % (ui.config.cf['server']), data)
             logfile.info('report result:', resp.read())
         except:

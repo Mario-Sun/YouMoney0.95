@@ -106,8 +106,8 @@ class FilePost:
         h.putheader('content-length', str(len(data)))
         h.endheaders()
         h.send(data)
-        errcode, errmsg, headers = h.getreply()
-        return errcode, h.getfile().read()
+        errcode, errmsg, headers = h.getresponse()
+        return errcode, h.getresponse().read()
 
     def add_file(self, name, filename, iszip=False):
         f = open(filename, 'rb')
@@ -166,7 +166,7 @@ class DataSync:
     def query(self):
         url  = self.user_url % ('query', self.conf['user'], self.conf['password'])
 
-        resp = http.client.urlopen(url)
+        resp = urllib.request.urlopen(url)
         data = resp.read()
         logfile.info('query resp:', data)
         x = json.loads(data)
@@ -236,7 +236,7 @@ class DataSync:
 
         elif self.status == self.UPDATE:
             url = self.url % ('getdata', self.conf['id'])
-            resp = http.client.urlopen(url)
+            resp = urllib.request.urlopen(url)
             data = resp.read()
             
             logfile.info('getdata len:', len(data)) 
@@ -268,8 +268,8 @@ class DataSync:
 
         url = self.conf_url % ('upconf', self.conf['id'])
     
-        postdata = urllib.urlencode({'data': json.dumps(data)})
-        resp = http.client.urlopen(url, postdata)
+        postdata = urllib.parse.urlencode({'data': json.dumps(data)})
+        resp = urllib.request.urlopen(url, postdata)
         s = resp.read()
         x = json.loads(s)
 
@@ -281,7 +281,7 @@ class DataSync:
 
         url  = self.user_url % ('getconf', self.conf['user'], self.conf['password'])
 
-        resp = http.client.urlopen(url)
+        resp = urllib.request.urlopen(url)
         s = resp.read()
          
         data = json.loads(s)
@@ -306,7 +306,7 @@ def do_sync(conf, db_sync_first_time, win, alert):
             datasync.status = DataSync.COMMIT
         dlg2.Destroy()
     elif status == 0:
-        wx.MessageBox(resp['error'], _('Sync Information'), wx.OK|wx.ICON_INFORMATION)
+        wx.MessageBox(resp['error'], _('Sync Information'), wx.OK | wx.ICON_INFORMATION)
                         
     # maybe first sync
     if db_sync_first_time == 0 and resp['ver']:

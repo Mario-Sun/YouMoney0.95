@@ -51,7 +51,7 @@ class DBStorage:
         ret = self.query(sql, False)
         if not ret:
             name = '%f.%s.%s.%s' % (time.time(), version.VERSION, sys.platform, uuid.uuid1().hex)
-            sql = "insert into identity values ('%s')" % (name)
+            sql = "insert into identity values ('%s')" % name
             self.execute(sql)
         else:
             row = ret[0]
@@ -59,7 +59,7 @@ class DBStorage:
             
             if len(row[0]) < 42:
                 name = '%s.%s' % (row[0], uuid.uuid1().hex)
-                sql = "update identity set name='%s'" % (name)
+                sql = "update identity set name='%s'" % name
                 self.execute(sql)
 
         sql = "pragma table_info(capital)"
@@ -90,7 +90,7 @@ class DBStorage:
             self.version = version.VERSION
         else:
             self.version = ret[0]['version']
-            isql = "update verinfo set version='%s'" % (version.VERSION)
+            isql = "update verinfo set version='%s'" % version.VERSION
             self.execute(sql)
 
     def close(self):

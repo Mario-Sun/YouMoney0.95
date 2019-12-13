@@ -28,7 +28,7 @@ def merge(samplefile, fromfile, tofile):
         if line.startswith('msgid'):
             idstr = line[5:].strip()
             f.write(line)
-            if olddict.has_key(idstr): 
+            if idstr in olddict:
                 f.write('msgstr %s\n' % (olddict[idstr]))
             else:
                 f.write('msgstr ""\n')
@@ -59,7 +59,7 @@ def create_en(fromfile, tofile):
         if line.startswith('msgid'):
             idstr = line[5:].strip()
             tof.write(line)
-            tof.write('msgstr %s\n' % (idstr))
+            tof.write('msgstr %s\n' % idstr)
 
             fromf.readline()
         elif line.startswith('"'):

@@ -35,7 +35,7 @@ def main():
     dir = os.path.dirname(home)
     # print dir
     os.chdir(dir)
-    name = "YouMoney-%s" % (version.VERSION) 
+    name = "YouMoney-%s" % version.VERSION
     print('name:', name)
     cmd = "rm -rf " + name
     os.system(cmd)

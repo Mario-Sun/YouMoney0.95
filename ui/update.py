@@ -10,6 +10,10 @@ import version
 from ui import logfile, event, storage
 import wx
 
+import gettext
+
+_ = gettext.gettext
+
 
 def windows_version():
     info = sys.getwindowsversion()
@@ -62,7 +66,7 @@ class Update:
                 logfile.info('try update file:', u)
                 info = system_version()
                 logfile.info('version:', info) 
-                info = urllib.quote(info).strip()
+                info = urllib.request.quote(info).strip()
                 u = u + '?sys=%s&ver=%s&info=%s&name=%s' % (sys.platform, version.VERSION, info, storage.name)
                 ret = self.updateone(u)
             except:
@@ -73,7 +77,7 @@ class Update:
         return ret
 
     def updateone(self, fileurl):
-        socket.setdefaulttimeout = 30
+        socket.setdefaulttimeout(30)
         fs = urllib.request.urlopen(fileurl)
         lines = fs.readlines()
         fs.close() 

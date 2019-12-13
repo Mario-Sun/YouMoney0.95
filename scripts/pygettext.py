@@ -14,6 +14,7 @@
 #
 
 from functools import reduce
+import importlib.util
 
 # for selftesting
 try:
@@ -158,7 +159,7 @@ If `inputfile' is -, standard input is read.
 """)
 
 import os
-import imp
+import importlib
 import sys
 import glob
 import time
@@ -239,7 +240,7 @@ def escape(s):
 
 def safe_eval(s):
     # unwrap quotes, safely
-    return eval(s, {'__builtins__':{}}, {})
+    return eval(s, {'__builtins__': {}}, {})
 
 
 def normalize(s):
@@ -269,8 +270,8 @@ def _visit_pyfiles(list, dirname, names):
     # get extension for python source files
     if '_py_ext' not in globals():
         global _py_ext
-        _py_ext = [triple[0] for triple in imp.get_suffixes()
-                   if triple[2] == imp.PY_SOURCE][0]
+        _py_ext = [triple[0] for triple in importlib.get_suffixes()
+                   if triple[2] == importlib.PY_SOURCE][0]
 
     # don't recurse into CVS directories
     if 'CVS' in names:
@@ -296,13 +297,13 @@ def _get_modpkg_path(dotted_name, pathlist=None):
     if len(parts) > 1:
         # we have a dotted path, import top-level package
         try:
-            file, pathname, description = imp.find_module(parts[0], pathlist)
+            file, pathname, description = importlib.util.find_spec(parts[0], pathlist)
             if file: file.close()
         except ImportError:
             return None
 
         # check if it's indeed a package
-        if description[2] == imp.PKG_DIRECTORY:
+        if description[2] == importlib.PKG_DIRECTORY:
             # recursively handle the remaining name parts
             pathname = _get_modpkg_path(parts[1], [pathname])
         else:
@@ -310,11 +311,11 @@ def _get_modpkg_path(dotted_name, pathlist=None):
     else:
         # plain name
         try:
-            file, pathname, description = imp.find_module(
+            file, pathname, description = importlib.find_module(
                 dotted_name, pathlist)
             if file:
                 file.close()
-            if description[2] not in [imp.PY_SOURCE, imp.PKG_DIRECTORY]:
+            if description[2] not in [importlib.PY_SOURCE, importlib.PKG_DIRECTORY]:
                 pathname = None
         except ImportError:
             pathname = None
@@ -364,8 +365,8 @@ class TokenEater:
 
     def __call__(self, ttype, tstring, stup, etup, line):
         # dispatch
-##        import token
-##        print >> sys.stderr, 'ttype:', token.tok_name[ttype], 'tstring:', tstring
+        ## import token
+        ##        print >> sys.stderr, 'ttype:', token.tok_name[ttype], 'tstring:', tstring
         self.__state(ttype, tstring, stup[0])
 
     def __waiting(self, ttype, tstring, lineno):
@@ -538,8 +539,8 @@ def main():
         nodocstrings = {}
 
     options = Options()
-    locations = {'gnu' : options.GNU,
-                 'solaris' : options.SOLARIS,
+    locations = {'gnu': options.GNU,
+                 'solaris': options.SOLARIS,
                  }
 
     files = ''
@@ -575,7 +576,7 @@ def main():
         elif opt in ('-v', '--verbose'):
             options.verbose = 1
         elif opt in ('-V', '--version'):
-            print _('pygettext.py (xgettext for Python) %s') % __version__
+            print(_('pygettext.py (xgettext for Python) %s') % __version__)
             sys.exit(0)
         elif opt in ('-w', '--width'):
             try:
@@ -635,12 +636,12 @@ def main():
     for filename in args:
         if filename == '-':
             if options.verbose:
-                print _('Reading standard input')
+                print(_('Reading standard input'))
             fp = sys.stdin
             closep = 0
         else:
             if options.verbose:
-                print _('Working on %s') % filename
+                print(_('Working on %s') % filename)
             fp = open(filename)
             closep = 1
         try:

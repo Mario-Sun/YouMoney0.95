@@ -59,10 +59,10 @@ elif sys.platform.startswith('win32'):
     )
 
     setup(version=version.VERSION,
-          description = 'YouMoney Updater',
+          description='YouMoney Updater',
           name='Updater',
           author='zhaoweikid',
-          author_email = 'zhaoweikid@gmail.com',
+          author_email='zhaoweikid@gmail.com',
           url='http://code.google.com/p/youomoney/',
           options=options,
           zipfile=None,

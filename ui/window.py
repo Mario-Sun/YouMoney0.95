@@ -6,6 +6,7 @@ import time
 import types
 import subprocess
 import wx
+from wx import adv
 import threading
 from ui import panels, dialogs, config, storage, export, recycle, task, sync
 from wx.lib.wordwrap import wordwrap
@@ -25,7 +26,7 @@ _ = gettext.gettext
 
 class MainFrame (wx.Frame):
     def __init__(self, parent, id, title, cf):
-        wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(900, 600),
+        wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(1000, 600),
                           name=u'YouMoney', style=wx.DEFAULT_FRAME_STYLE)
         config.cf = cf
         self.rundir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -54,7 +55,7 @@ class MainFrame (wx.Frame):
         self.book.load_category(self.category)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.book, 1, wx.EXPAND|wx.ALL)
+        sizer.Add(self.book, 1, wx.EXPAND | wx.ALL)
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
 
@@ -123,7 +124,7 @@ class MainFrame (wx.Frame):
             self.db = storage.DBStorage(path)
         except:
             wx.MessageBox(_('Account file is not exist! You may create one or open exist.'), _('Error'),
-                          wx.OK|wx.ICON_INFORMATION)
+                          wx.OK | wx.ICON_INFORMATION)
             path = self.conf.default_db_path()
             self.conf['lastdb'] = path
             self.db = storage.DBStorage(path)
@@ -134,7 +135,7 @@ class MainFrame (wx.Frame):
         prgver = int(version.VERSION.replace('.', ''))
         
         if dbver > prgver:
-            wx.MessageBox(_('Database version is newer than program.'), _('Error'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Database version is newer than program.'), _('Error'), wx.OK | wx.ICON_INFORMATION)
             sys.exit()
         
         self.conf.setid(storage.name)
@@ -165,38 +166,38 @@ class MainFrame (wx.Frame):
         self.book.load_cycle()
     
     def make_menu(self):
-        self.ID_FILE_NEW  = wx.NewId()
-        self.ID_FILE_OPEN = wx.NewId()
-        self.ID_FILE_SAVEAS = wx.NewId()
-        self.ID_FILE_CHANGE = wx.NewId()
-        self.ID_FILE_PASSWORD = wx.NewId()
-        self.ID_FILE_IMPORT = wx.NewId()
-        self.ID_FILE_IMPORT_CATE = wx.NewId()
-        self.ID_FILE_IMPORT_DATA = wx.NewId()
-        self.ID_FILE_EXPORT = wx.NewId()
-        self.ID_FILE_EXPORT_CATE = wx.NewId()
-        self.ID_FILE_EXPORT_DATA = wx.NewId()
-        self.ID_FILE_EXIT = wx.NewId()
+        self.ID_FILE_NEW  = wx.NewIdRef()
+        self.ID_FILE_OPEN = wx.NewIdRef()
+        self.ID_FILE_SAVEAS = wx.NewIdRef()
+        self.ID_FILE_CHANGE = wx.NewIdRef()
+        self.ID_FILE_PASSWORD = wx.NewIdRef()
+        self.ID_FILE_IMPORT = wx.NewIdRef()
+        self.ID_FILE_IMPORT_CATE = wx.NewIdRef()
+        self.ID_FILE_IMPORT_DATA = wx.NewIdRef()
+        self.ID_FILE_EXPORT = wx.NewIdRef()
+        self.ID_FILE_EXPORT_CATE = wx.NewIdRef()
+        self.ID_FILE_EXPORT_DATA = wx.NewIdRef()
+        self.ID_FILE_EXIT = wx.NewIdRef()
 
-        self.ID_EDIT_ADDCATE = wx.NewId()
-        self.ID_EDIT_ADDINCOME = wx.NewId()
-        self.ID_EDIT_ADDPAY = wx.NewId()
-        self.ID_EDIT_ADDCYCLE = wx.NewId()
-        self.ID_EDIT_SYNC = wx.NewId()
-        self.ID_EDIT_CATE = wx.NewId()
-        self.ID_EDIT_INCOME = wx.NewId()
-        self.ID_EDIT_PAY = wx.NewId()
-        self.ID_EDIT_CYCLE = wx.NewId()
-        self.ID_EDIT_STAT = wx.NewId()
+        self.ID_EDIT_ADDCATE = wx.NewIdRef()
+        self.ID_EDIT_ADDINCOME = wx.NewIdRef()
+        self.ID_EDIT_ADDPAY = wx.NewIdRef()
+        self.ID_EDIT_ADDCYCLE = wx.NewIdRef()
+        self.ID_EDIT_SYNC = wx.NewIdRef()
+        self.ID_EDIT_CATE = wx.NewIdRef()
+        self.ID_EDIT_INCOME = wx.NewIdRef()
+        self.ID_EDIT_PAY = wx.NewIdRef()
+        self.ID_EDIT_CYCLE = wx.NewIdRef()
+        self.ID_EDIT_STAT = wx.NewIdRef()
 
-        self.ID_VIEW_LANG = wx.NewId()
-        self.ID_VIEW_LANG_EN = wx.NewId()
-        self.ID_VIEW_LANG_CN = wx.NewId()
-        self.ID_VIEW_LANG_TW = wx.NewId()
-        self.ID_VIEW_LANG_JP = wx.NewId()
+        self.ID_VIEW_LANG = wx.NewIdRef()
+        self.ID_VIEW_LANG_EN = wx.NewIdRef()
+        self.ID_VIEW_LANG_CN = wx.NewIdRef()
+        self.ID_VIEW_LANG_TW = wx.NewIdRef()
+        self.ID_VIEW_LANG_JP = wx.NewIdRef()
         
-        self.ID_ABOUT_UPDATE  = wx.NewId()
-        self.ID_ABOUT_WEBSITE = wx.NewId()
+        self.ID_ABOUT_UPDATE  = wx.NewIdRef()
+        self.ID_ABOUT_WEBSITE = wx.NewIdRef()
             
         self.lang2id['zh_CN'] = self.ID_VIEW_LANG_CN
         self.lang2id['zh_TW'] = self.ID_VIEW_LANG_TW
@@ -302,13 +303,13 @@ class MainFrame (wx.Frame):
         self.langmenu.Check(mid, True)
 
     def make_toolbar(self):
-        self.ID_TB_CATEEDIT = wx.NewId()
-        self.ID_TB_INCOME   = wx.NewId()
-        self.ID_TB_PAYOUT   = wx.NewId()
-        self.ID_TB_CYCLE    = wx.NewId()
-        self.ID_TB_SYNC     = wx.NewId()
+        self.ID_TB_CATEEDIT = wx.NewIdRef()
+        self.ID_TB_INCOME   = wx.NewIdRef()
+        self.ID_TB_PAYOUT   = wx.NewIdRef()
+        self.ID_TB_CYCLE    = wx.NewIdRef()
+        self.ID_TB_SYNC     = wx.NewIdRef()
         
-        self.toolbar = wx.ToolBar(self, -1, wx.DefaultPosition, wx.Size(48, 48), wx.TB_HORIZONTAL|wx.TB_FLAT | wx.TB_TEXT)
+        self.toolbar = wx.ToolBar(self, -1, wx.DefaultPosition, wx.Size(48, 48), wx.TB_HORIZONTAL | wx.TB_FLAT | wx.TB_TEXT)
         self.toolbar.SetToolBitmapSize(wx.Size(48, 48))
         # self.toolbar.AddLabelTool(self.ID_TB_CATEEDIT, _('Add Category')+'(&T)',
         # load_bitmap(os.path.join(self.bmpdir, 'categories.png')),
@@ -321,8 +322,8 @@ class MainFrame (wx.Frame):
         # self.toolbar.AddLabelTool(self.ID_TB_SYNC, _("Sync")+'(&Y)',
         # load_bitmap(os.path.join(self.bmpdir, 'sync.png')), shortHelp=_("Sync user data"), longHelp=_("Sync user data"))
 
-        self.toolbar.Realize()
         self.SetToolBar(self.toolbar)
+        self.toolbar.Realize()
 
         self.Bind(wx.EVT_TOOL, self.OnCateEdit, id=self.ID_TB_CATEEDIT)
         self.Bind(wx.EVT_TOOL, self.OnIncome, id=self.ID_TB_INCOME)
@@ -332,7 +333,8 @@ class MainFrame (wx.Frame):
 
     def make_statusbar(self):
         self.statusbar = self.CreateStatusBar()
-        self.statusbar.SetFieldsCount(1)
+        # self.statusbar.SetFieldsCount(1)
+        self.SetStatusWidths([-1])
         self.SetStatusWidths([-1])
 
     def OnCloseWindow(self, event):
@@ -356,7 +358,7 @@ class MainFrame (wx.Frame):
             defaultDir=os.getcwd(), 
             defaultFile="",
             wildcard=_("YouMoney Database (*.db)|*.db"),
-            style=wx.OPEN | wx.CHANGE_DIR
+            style=wx.FD_OPEN | wx.FD_CHANGE_DIR
             )
 
         if dlg.ShowModal() == wx.ID_OK:
@@ -377,7 +379,7 @@ class MainFrame (wx.Frame):
     def OnFileNew(self, event):
         dlg = wx.FileDialog(
             self, message=_("New account file save..."), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.SAVE)
+            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -386,7 +388,7 @@ class MainFrame (wx.Frame):
                 path += ".db"
  
             if os.path.isfile(path):
-                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK|wx.ICON_INFORMATION) 
+                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK | wx.ICON_INFORMATION)
                 return
  
             self.db.close()
@@ -405,7 +407,7 @@ class MainFrame (wx.Frame):
     def OnFileSaveAs(self, event):
         dlg = wx.FileDialog(
             self, message=_("Account save as..."), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.SAVE)
+            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -414,12 +416,12 @@ class MainFrame (wx.Frame):
                 path += ".db"
             
             if os.path.isfile(path):
-                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK|wx.ICON_INFORMATION) 
+                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK | wx.ICON_INFORMATION)
                 return
             try:
                 shutil.copyfile(self.conf['lastdb'], path)
             except Exception as e:
-                wx.MessageBox(_('Save account failture:') + str(e), _('Can not save account file'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(_('Save account failture:') + str(e), _('Can not save account file'), wx.OK | wx.ICON_INFORMATION)
                 return
         
         dlg.Destroy()
@@ -427,7 +429,7 @@ class MainFrame (wx.Frame):
     def OnFileChange(self, event):
         dlg = wx.FileDialog(
             self, message=_("Change account path..."), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.SAVE)
+            defaultFile="", wildcard=_("YouMoney Database (*.db)|*.db"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -438,12 +440,12 @@ class MainFrame (wx.Frame):
             self.conf.dump()
             oldfile = self.conf['lastdb']
             if os.path.isfile(path):
-                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK|wx.ICON_INFORMATION) 
+                wx.MessageBox(_('File exist'), _('Can not save account file'), wx.OK | wx.ICON_INFORMATION)
                 return
             try:
                 shutil.copyfile(self.conf['lastdb'], path)
             except Exception as e:
-                wx.MessageBox(_('Change account path failture:') + str(e), _('Can not save account file'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(_('Change account path failture:') + str(e), _('Can not save account file'), wx.OK | wx.ICON_INFORMATION)
                 return
             self.db.close()
             if os.path.isfile(oldfile):
@@ -492,7 +494,7 @@ class MainFrame (wx.Frame):
                     # self.db.execute(sql, (item['cate'], parent, type, ))
                     self.db.execute_param(sql, (item['cate'], parent, type, ))
                 except Exception as e:
-                    wx.MessageBox(_('Add category failture:') + str(e), _('Add category information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Add category failture:') + str(e), _('Add category information'), wx.OK | wx.ICON_INFORMATION)
                 else:
                     self.reload()
             elif item['mode'] == 'update':
@@ -500,10 +502,10 @@ class MainFrame (wx.Frame):
                 sql = "update category set name=?,parent=?,type=? where id=?"
                 logfile.info('update category:', sql)
                 try:
-                    self.db.execute_param(sql, (item['cate'],parent,type,item['id'],))
+                    self.db.execute_param(sql, (item['cate'], parent, type, item['id'],))
                 except Exception as e:
                     wx.MessageBox(_('Change category failture:') + str(e), _('Change category information'),
-                                  wx.OK|wx.ICON_INFORMATION)
+                                  wx.OK | wx.ICON_INFORMATION)
                 else:
                     self.reload()
 
@@ -511,7 +513,7 @@ class MainFrame (wx.Frame):
         tday = datetime.date.today()
         catelist = self.category.income_catelist
         if len(catelist) == 0:
-            wx.MessageBox(_('Add category first!'), _('Can not add income item'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Add category first!'), _('Can not add income item'), wx.OK | wx.ICON_INFORMATION)
             return
         ready = {'cates': catelist, 'cate': catelist[0],
                  'year': tday.year, 'month': tday.month, 'day': tday.day,
@@ -545,7 +547,7 @@ class MainFrame (wx.Frame):
                     logfile.info('insert capital:', sql)
                     self.db.execute_param(sql, (cateid, num, tnow, year, month, day, payway, data['explain'],))
                 except Exception as e:
-                    wx.MessageBox(_('Add income failture:') + str(e), _('Add income information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Add income failture:') + str(e), _('Add income information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('insert income error:', traceback.format_exc())
                 else:
                     self.reload()
@@ -566,7 +568,7 @@ class MainFrame (wx.Frame):
                     logfile.info('update capital:', sql)
                     self.db.execute_param(sql, (cateid, num, year, month, day, data['explain'], data['id'],))
                 except Exception as e:
-                    wx.MessageBox(_('Change income failture:') + str(e), _('Change income information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Change income failture:') + str(e), _('Change income information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('update error:', traceback.format_exc())
                 else:
                     self.reload()
@@ -578,7 +580,7 @@ class MainFrame (wx.Frame):
         tday = datetime.date.today()
         catelist = self.category.payout_catelist
         if len(catelist) == 0:
-            wx.MessageBox(_('Add category first!'), _('Can not add payout item'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Add category first!'), _('Can not add payout item'), wx.OK | wx.ICON_INFORMATION)
             return
  
         ready = {'cates': catelist, 'cate': catelist[0], 'num': '',
@@ -612,7 +614,7 @@ class MainFrame (wx.Frame):
                     logfile.info('insert capital payout:', sql)
                     self.db.execute_param(sql, (cateid, num, tnow, year, month, day, payway, data['explain'],))
                 except Exception as e:
-                    wx.MessageBox(_('Add payout failture:') + str(e), _('Add payout information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Add payout failture:') + str(e), _('Add payout information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('insert payout error:', traceback.format_exc())
                 else:
                     self.reload()
@@ -634,7 +636,7 @@ class MainFrame (wx.Frame):
                     logfile.info('update capital:', sql)
                     self.db.execute_param(sql, (cateid, num, year, month, day, payway, data['explain'], data['id'],))
                 except Exception as e:
-                    wx.MessageBox(_('Change payout failture:') + str(e), _('Change payout information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Change payout failture:') + str(e), _('Change payout information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('update error:', traceback.format_exc())
                 else:
                     self.reload()
@@ -646,21 +648,21 @@ class MainFrame (wx.Frame):
         income_catelist = self.category.income_catelist
 
         if len(payout_catelist) == 0 and len(income_catelist) == 0:
-            wx.MessageBox(_('Add category first!'), _('Can not add cycle item'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Add category first!'), _('Can not add cycle item'), wx.OK | wx.ICON_INFORMATION)
             return
         
         cyclelist = []
         for k in storage.cycles:
-            if type(k) != types.IntType:
+            if isinstance(k, int):
                 cyclelist.append(k)
         cyclelist.reverse()
 
-        ready = {'payout_cates':payout_catelist, 'payout_cate':payout_catelist[0], 
-                 'income_cates':income_catelist, 'income_cate':income_catelist[0],
-                 'num':'', 'types':[_('Payout'), _('Income')], 'type':_('Payout'),
-                 'cycles':cyclelist, 'cycle':cycles[1],
-                 'explain':'',
-                 'pay':_('Cash'), 'mode':'insert'}
+        ready = {'payout_cates': payout_catelist, 'payout_cate': payout_catelist[0],
+                 'income_cates': income_catelist, 'income_cate': income_catelist[0],
+                 'num': '', 'types': [_('Payout'), _('Income')], 'type': _('Payout'),
+                 'cycles': cyclelist, 'cycle': cycles[1],
+                 'explain': '',
+                 'pay': _('Cash'), 'mode': 'insert'}
         # print 'payout insert:', ready
         self.cycle_dialog(ready)
 
@@ -690,7 +692,7 @@ class MainFrame (wx.Frame):
                     logfile.info('insert cycle:', sql)
                     self.db.execute_param(sql, (cateid, num, tnow, payway, typeid, addtime, data['explain'],))
                 except Exception as e:
-                    wx.MessageBox(_('Add cycle failture:') + str(e), _('Add cycle information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Add cycle failture:') + str(e), _('Add cycle information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('insert cycle error:', traceback.format_exc())
                 else:
                     cid = self.db.last_insert_id() 
@@ -719,7 +721,7 @@ class MainFrame (wx.Frame):
                     logfile.info('update cycle:', sql)
                     self.db.execute_param(sql, (cateid, num, payway, typeid, addtime, data['explain'], data['id'],))
                 except Exception as e:
-                    wx.MessageBox(_('Change cycle failture:') + str(e), _('Change cycle information'), wx.OK|wx.ICON_INFORMATION)
+                    wx.MessageBox(_('Change cycle failture:') + str(e), _('Change cycle information'), wx.OK | wx.ICON_INFORMATION)
                     logfile.info('update error:', traceback.format_exc())
                 else:
                     self.reload()
@@ -738,20 +740,19 @@ class MainFrame (wx.Frame):
             self.conf.dump()
 
         if ischange:
-            wx.MessageBox(_('Language changed! You must restart youmoney !'), _('Note:'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('Language changed! You must restart youmoney !'), _('Note:'), wx.OK | wx.ICON_INFORMATION)
 
     def OnAboutInfo(self, event):
-        info = wx.AboutDialogInfo()
+        info = wx.adv.AboutDialogInfo()
         info.Name = u"YouMoney"
         info.Version = version.VERSION
         info.Copyright = "(C) 2010 zhaoweikid"
-        info.Description = wordwrap(_("YouMoney is a opensource personal finance software write by Python language.") + '\n',
-            350, wx.ClientDC(self))
+        info.Description = wordwrap(_("YouMoney is a opensource personal finance software write by Python language.") + '\n', 350, wx.ClientDC(self))
         info.WebSite = ("http://code.google.com/p/youmoney", _("YouMoney home page"))
         info.Developers = ["zhaoweikid"]
 
         info.License = wordwrap("GPL", 500, wx.ClientDC(self))
-        wx.AboutBox(info)
+        wx.adv.AboutBox(info)
 
     def OnAboutUpdate(self, event):
         self.updater()
@@ -774,7 +775,7 @@ class MainFrame (wx.Frame):
         if cmd:
             p = subprocess.Popen(cmd, shell=True)
         else:
-            wx.MessageBox(_('This version is not support automatic update. Only windows and run with source support.'), _('Note:'), wx.OK|wx.ICON_INFORMATION)
+            wx.MessageBox(_('This version is not support automatic update. Only windows and run with source support.'), _('Note:'), wx.OK | wx.ICON_INFORMATION)
 
     def OnUpdateNotify(self, event):
         dlg = dialogs.UpdateDialog(self, event.version)
@@ -785,7 +786,7 @@ class MainFrame (wx.Frame):
         dlg.Destroy()
 
     def OnMyAlert(self, event):
-        dlg = wx.MessageDialog(self, event.message, _('Note:'), wx.OK|wx.ICON_INFORMATION)
+        dlg = wx.MessageDialog(self, event.message, _('Note:'), wx.OK | wx.ICON_INFORMATION)
         ret = dlg.ShowModal()
         dlg.Destroy()
 
@@ -802,7 +803,7 @@ class MainFrame (wx.Frame):
            
             if not pass1 and not pass2:
                 dlg.set_warn(_('Delete password'))
-                dlg2 = wx.MessageDialog(self, _('Delete password'), _('Note:'), wx.OK|wx.ICON_INFORMATION)
+                dlg2 = wx.MessageDialog(self, _('Delete password'), _('Note:'), wx.OK | wx.ICON_INFORMATION)
                 ret = dlg2.ShowModal()
                 dlg2.Destroy()
             else:
@@ -848,9 +849,9 @@ class MainFrame (wx.Frame):
                 exp.category(path)
             except Exception as e:
                 logfile.info(traceback.format_exc())
-                wx.MessageBox(str(e), _('Import Error:'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(str(e), _('Import Error:'), wx.OK | wx.ICON_INFORMATION)
             else:
-                wx.MessageBox(_('Import complete!'), _('Information'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(_('Import complete!'), _('Information'), wx.OK | wx.ICON_INFORMATION)
             self.reload()
         dlg.Destroy()
 
@@ -864,16 +865,14 @@ class MainFrame (wx.Frame):
  
             exp = export.DataImport(self.db, 'gbk')
             try:
-                idlg = wx.ProgressDialog(_('Importing...'), _('Waiting for importing.'), 
-                                        maximum=100, parent=self,
-                                        style=wx.PD_APP_MODAL|wx.PD_ELAPSED_TIME|wx.PD_REMAINING_TIME)
+                idlg = wx.ProgressDialog(_('Importing...'), _('Waiting for importing.'), maximum=100, parent=self, style=wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
                 exp.itemdata(path, idlg)
                 idlg.Destroy()
             except Exception as e:
                 logfile.info(traceback.format_exc())
-                wx.MessageBox(str(e), _('Import Error:'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(str(e), _('Import Error:'), wx.OK | wx.ICON_INFORMATION)
             else:
-                wx.MessageBox(_('Import complete!'), _('Information'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(_('Import complete!'), _('Information'), wx.OK | wx.ICON_INFORMATION)
             self.reload()
  
         dlg.Destroy()
@@ -881,7 +880,7 @@ class MainFrame (wx.Frame):
     def OnFileExportCate(self, event):
         dlg = wx.FileDialog(
             self, message=_("Export Category"), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.SAVE)
+            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -890,13 +889,13 @@ class MainFrame (wx.Frame):
                 exp.category(path)
             except Exception as e:
                 logfile.info(traceback.format_exc())
-                wx.MessageBox(str(e), _('Export Error:'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(str(e), _('Export Error:'), wx.OK | wx.ICON_INFORMATION)
         dlg.Destroy()
 
     def OnFileExportData(self, event):
         dlg = wx.FileDialog(
             self, message=_("Export Data"), defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.SAVE)
+            defaultFile="", wildcard=_("csv file (*.csv)|*.csv"), style=wx.FD_SAVE)
         dlg.SetFilterIndex(2)
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
@@ -905,7 +904,7 @@ class MainFrame (wx.Frame):
                 exp.itemdata(path)
             except Exception as e:
                 logfile.info(traceback.format_exc())
-                wx.MessageBox(str(e), _('Export Error:'), wx.OK|wx.ICON_INFORMATION)
+                wx.MessageBox(str(e), _('Export Error:'), wx.OK | wx.ICON_INFORMATION)
  
         dlg.Destroy()
 

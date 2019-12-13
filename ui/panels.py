@@ -35,7 +35,7 @@ class CategoryPanel(wx.Panel):
         self.tree.AddColumn(_("Month Total"))
         self.tree.AddColumn(_("Day Total"))
 
-        self.tree.SetMainColumn(0)
+        # self.tree.SetMainColumn(0)
         self.tree.SetColumnWidth(0, 200)
 
     def get_all_children(self, parent):
@@ -79,14 +79,14 @@ class CategoryPanel(wx.Panel):
             self.tree.Expand(x)
 
     def OnPopupMenu(self, event):
-        pt = event.GetPosition();
+        pt = event.GetPosition()
         test = self.tree.HitTest(pt)
         if test[0]:
             self.tree.SelectItem(test[0])
 
         if not hasattr(self, "ID_POPUP_DEL"):
-            self.ID_POPUP_DEL = wx.NewId()
-            self.ID_POPUP_EDIT = wx.NewId()
+            self.ID_POPUP_DEL = wx.NewIdRef()
+            self.ID_POPUP_EDIT = wx.NewIdRef()
             self.Bind(wx.EVT_MENU, self.OnCategoryDel, id=self.ID_POPUP_DEL)
             self.Bind(wx.EVT_MENU, self.OnItemActivated, id=self.ID_POPUP_EDIT)
         menu = wx.Menu()
@@ -203,10 +203,11 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
         items = [str(x) for x in range(1, 13)]
         self.month = wx.ComboBox(self, 500, str(tday.month), (60, 50), (60, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         box.Add(wx.StaticText(self, -1, _(' Date: '), (8, 10)), 0, wx.ALIGN_CENTER)
-        box.Add(self.year, 0, wx.EXPAND)
+        # box.Add(self.)
         box.Add(wx.StaticText(self, -1, _(" Year: "), (8, 10)), 0, wx.ALIGN_CENTER)
-        box.Add(self.month, 0, wx.EXPAND)
+        box.Add(self.year, 0, wx.EXPAND)
         box.Add(wx.StaticText(self, -1, _(" Month:"), (8, 10)), 0, wx.ALIGN_CENTER)
+        box.Add(self.month, 0, wx.EXPAND)
         box.Add(wx.StaticText(self, -1, _("  Sum: "), (8, 10)), 0, wx.ALIGN_CENTER)
         # self.total = wx.TextCtrl(self, -1, size=(100,-1), style=wx.TE_READONLY)
         self.total = wx.StaticText(self, -1, "", (8, 10), (60, -1))
@@ -239,8 +240,8 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
 
     def OnPopupMenu(self, event):
         if not hasattr(self, "ID_POPUP_DEL"):
-            self.ID_POPUP_DEL = wx.NewId()
-            self.ID_POPUP_EDIT = wx.NewId()
+            self.ID_POPUP_DEL = wx.NewIdRef()
+            self.ID_POPUP_EDIT = wx.NewIdRef()
 
             self.Bind(wx.EVT_MENU, self.OnDelete, id=self.ID_POPUP_DEL)
             self.Bind(wx.EVT_MENU, self.OnItemActivated, id=self.ID_POPUP_EDIT)
@@ -418,8 +419,8 @@ class CycleListPanel(wx.Panel):
 
     def OnPopupMenu(self, event):
         if not hasattr(self, "ID_POPUP_DEL"):
-            self.ID_POPUP_DEL = wx.NewId()
-            self.ID_POPUP_EDIT = wx.NewId()
+            self.ID_POPUP_DEL = wx.NewIdRef()
+            self.ID_POPUP_EDIT = wx.NewIdRef()
 
             self.Bind(wx.EVT_MENU, self.OnDelete, id=self.ID_POPUP_DEL)
             self.Bind(wx.EVT_MENU, self.OnItemActivated, id=self.ID_POPUP_EDIT)
@@ -478,7 +479,7 @@ class CycleListPanel(wx.Panel):
 
         cyclelist = []
         for k in storage.cycles:
-            if not isinstance(k, types.IntType):
+            if not isinstance(k, int):
                 cyclelist.append(k)
         cyclelist.reverse()
 
