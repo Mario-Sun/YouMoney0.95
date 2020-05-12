@@ -1,14 +1,14 @@
 Name: YouMoney
-Version: 0.8.7
+Version: 0.9.5
 Release: 1
 Summary: YouMoney - free personal finance software
 Group: Applications/Archiving
 License: GPL
 Vendor: zhaoweikid <zhaoweikid@gmail.com>
-URL: http://code.google.com/p/youmoney/
+URL:''
 Source: %{name}-%{version}.zip
-Requires: python >= 2.5 
-Requires: wxPython >= 2.8.9.0
+Requires: python >= 3.7
+Requires: wxPython >= 4.1.0
 
 %description
 YouMoney is a simple personal finance software for you. Support Windows, Linux, MacOS X.

@@ -17,6 +17,9 @@ from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
 import version
 from ui import logfile, config, i18n
 
+import gettext
+
+_ = gettext.gettext
 
 
 home = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -39,7 +42,7 @@ class InstallError (Exception):
 
 
 def sumfile(filename):
-    m = md5.new()
+    m = md5()
     fobj = open(filename, 'rb')
     while True:
         d = fobj.read(8086)
@@ -70,22 +73,22 @@ class Downloader:
         if self.h:
             self.h.close()
 
-        self.h = http.client.HTTP()
+        self.h = http.client.HTTPConnection(self.host)
         # self.h.set_debuglevel(1)
-        self.h.connect(self.host)
+        self.h.connect()
         self.h.putrequest('GET', self.relurl)
         self.h.putheader('Host', self.host)
-        self.h.putheader('User-Agent', 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)')
+        self.h.putheader('User-Agent', 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)') # TODO: to be updated
         self.h.putheader('Accept', '*/*')
         self.h.putheader('Accept-Language', 'zh-cn')
         self.h.putheader('Connection', 'Keep-Alive')
 
         if size > 0:
-            self.h.putheader('Range', 'bytes=%d-' % (size))
+            self.h.putheader('Range', 'bytes=%d-' % size)
 
         self.h.endheaders()
          
-        return self.h.getreply()
+        return self.h.getresponse()
 
     def getdata(self, length):
         logfile.info('length:', length)
@@ -154,7 +157,7 @@ class Updater:
     def openinfo(self):
         socket.setdefaulttimeout(30)
         updatefile = ['http://www.pythonid.com/youmoney/update.txt', 
-                      'http://youmoney.googlecode.com/files/update.txt']
+                      'http://youmoney.googlecode.com/files/update.txt']    # TODO: to be  updated
         num = 0
         for url in updatefile:
             self.callback.Update(50 * num, _('Download update.txt') + '...')
@@ -181,7 +184,7 @@ class Updater:
             return
 
         raise IOError('get update.txt error!')
-        self.callback.Update(100)
+        # self.callback.Update(100)
 
     def download(self):
         verstr = self.info['version']
@@ -274,7 +277,7 @@ class Updater:
             newdir = os.path.dirname(newpath)
 
             if not os.path.isdir(newdir):
-                os.mkdirs(newdir)
+                os.makedirs(newdir)
 
             newf = open(newpath, 'wb')
             newf.write(f.read(filepath))
@@ -305,7 +308,7 @@ class Updater:
                     continue
             toppath = os.path.join(self.home, topdir)
             if os.path.isdir(toppath):
-                for root,dirs,files in os.walk(toppath):
+                for root, dirs, files in os.walk(toppath):
                     for fname in files:
                         fpath = os.path.join(root, fname)
                         if fpath.endswith('.swp'):
@@ -343,7 +346,7 @@ class Updater:
         maxc = 30
         issend = False
         socket.setdefaulttimeout(30)
-        while  maxc > 0:
+        while maxc > 0:
             logfile.info('try connect to youmoney...')
             self.callback.Update(950)
             try:
@@ -374,7 +377,7 @@ class Updater:
                         raise IOError('connect error')
                 else:
                     raise IOError('connect error')
-                sock.setblocking(1)
+                sock.setblocking(bool('true'))
             except:
                 sock.close()
                 logfile.info(traceback.format_exc())
@@ -389,7 +392,7 @@ class Updater:
                     sock.close()
                     return False
                 else:
-                    sockfile.write('update\r\n')
+                    sockfile.write('update\r\n'.encode(encoding='utf-8'))
                     sockfile.flush()
                     line = sockfile.readline()
                     logfile.info('read:', line.strip())

@@ -19,12 +19,12 @@ def _ScaleBlit(bmp, dc, dst_rect):
     dc.SetUserScale(sX, sY)
 
     old_mode = None
-    if os.name == 'nt':
-        h_dst = dc.GetHDC()
-        try:
-            old_mode = win32gui.SetStretchBltMode(h_dst, win32con.HALFTONE)
-        except:
-            pass
+    # if os.name == 'nt':
+    #     h_dst = dc.GetHDC()
+    #     try:
+    #         old_mode = win32gui.SetStretchBltMode(h_dst, win32con.HALFTONE)
+    #     except:
+    #         pass
 
     if sX == 0:
         w = 0
@@ -38,11 +38,11 @@ def _ScaleBlit(bmp, dc, dst_rect):
 
     dc.DrawBitmap(bmp, w, h, True)
 
-    if os.name == 'nt':
-        try:
-            win32gui.SetStretchBltMode(h_dst, old_mode)
-        except:
-            pass
+    # if os.name == 'nt':
+    #     try:
+    #         win32gui.SetStretchBltMode(h_dst, old_mode)
+    #     except:
+    #         pass
 
     dc.SetUserScale(1, 1)
 
@@ -147,7 +147,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         self.vspacing = 40
 
         self.colormap = []
-        for x in  range(2, 20):
+        for x in range(2, 20):
             self.colormap.append([x**3-x, x])
         
         self.draw = self._drawpie
@@ -157,7 +157,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         dc.SetBackground(wx.Brush(self.bgcolor))
         dc.Clear()
  
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         # f.SetWeight(wx.FONTWEIGHT_BOLD)
         dc.SetFont(f)
 
@@ -320,7 +320,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
  
         maxy = (maxval / 10 + 1) * 10
            
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         # f.SetWeight(wx.FONTWEIGHT_BOLD)
         dc.SetFont(f)
 
@@ -455,7 +455,7 @@ class CharDrawer (wx.Panel, ScaledBufferMixin):
         dc.Clear()
         rect = self.GetClientRect()
 
-        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTSTYLE_NORMAL)
+        f = wx.Font(self.fontsize, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         dc.SetFont(f)
         # 说明            
         x1 = self.margin_left

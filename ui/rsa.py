@@ -26,8 +26,10 @@ def gcd(p, q):
     >>> gcd(42, 6)
     6
     """
-    if p<q: return gcd(q, p)
-    if q == 0: return p
+    if p < q:
+        return gcd(q, p)
+    if q == 0:
+        return p
     return gcd(q, abs(p % q))
 
 
@@ -41,14 +43,15 @@ def bytes2int(bytes):
     8405007
     """
 
-    if not (type(bytes) is types.ListType or type(bytes) is types.StringType):
+    if not (isinstance(bytes, list) or isinstance(bytes, str)):
         raise TypeError("You must pass a string or a list")
 
     # Convert byte stream to integer
     integer = 0
     for byte in bytes:
         integer *= 256
-        if type(byte) is types.StringType: byte = ord(byte)
+        if isinstance(bytes, str):
+            byte = ord(byte)
         integer += byte
 
     return integer
@@ -295,7 +298,7 @@ def calculate_keys(p, q, nbits):
     if not (e * i) % phi_n == 1:
         raise Exception("e (%d) and i (%d) are not mult. inv. modulo phi_n (%d)" % (e, i, phi_n))
 
-    return (e, i)
+    return e, i
 
 
 def gen_keys(nbits):
@@ -397,7 +400,7 @@ def chopstring(message, key, n, funcref):
 
     cypher = []
     
-    for bindex in range(blocks):
+    for bindex in range(int(blocks)):
         offset = bindex * nbytes
         block = message[offset:offset+nbytes]
         value = bytes2int(block)

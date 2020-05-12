@@ -3,6 +3,8 @@ import os
 import sys
 import locale
 
+locale.setlocale(locale.LC_ALL, '')
+
 cf = None
 
 
@@ -12,7 +14,7 @@ class Configure:
         self.home = self.rundir
         # print 'rundir:', self.rundir
         self.charset = charset
-        self.locallang = locale.getdefaultlocale()[0] 
+        self.locallang = locale.getdefaultlocale()[0]
         if sys.platform == 'darwin':
             if not self.locallang:
                 self.localcharset = 'utf-8'
@@ -38,7 +40,7 @@ class Configure:
         self.iscreate = False
         # sync_way maybe 'user/id'
         self.datadef = {'lastdb': '', 'lang': '', #'rsa_pub':'', 'rsa_private':'',
-                     'id': '', 'user': '', 'password': '', 'sync_way': '', 'sync_ver': '', 'sync_auto': '', 'sync_md5': '', 'server': 'youmoney.pythonid.com'}
+'id': '', 'user': '', 'password': '', 'sync_way': '', 'sync_ver': '', 'sync_auto': '', 'sync_md5': '', 'server': 'youmoney.pythonid.com'}
 
         self.data = None
         self.load()

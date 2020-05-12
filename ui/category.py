@@ -1,16 +1,15 @@
 # coding: utf-8
 import datetime
-import types
 import gettext
 
 _ = gettext.gettext
 
 
 class TreeNode:
-    def __init__(self, parent, name, id):
+    def __init__(self, parent, name, idx):
         self.parent = parent 
         self.name = name
-        self.id   = id
+        self.id   = idx
         self.childs = []
         self.count  = 0
         self.month_num = 0.0
@@ -19,8 +18,8 @@ class TreeNode:
     def add_child(self, child):
         self.childs.append(child)
     
-    def add_child_name(self, name, id):
-        self.childs.append(TreeNode(self, name, id))
+    def add_child_name(self, name, idx):
+        self.childs.append(TreeNode(self, name, idx))
 
     def find(self, name):
         for ch in self.childs:
@@ -299,7 +298,7 @@ class Category:
     def catelist(self, ctype=None):
         """所有类别的列表, 每项为 parent->child"""
         if ctype is None:
-            return {_('Payout'):self.payout_catelist, _('Income'):self.income_catelist}
+            return {_('Payout'): self.payout_catelist, _('Income'): self.income_catelist}
         elif ctype == 'payout' or ctype == 0:
             return self.payout_catelist
         elif ctype == 'income' or ctype == 1:
@@ -308,14 +307,14 @@ class Category:
    
     def catelist_parent(self):
         """所有一级类别列表"""
-        return {_('Payout'):self.payout_parentlist, _('Income'):self.income_parentlist}
+        return {_('Payout'): self.payout_parentlist, _('Income'): self.income_parentlist}
 
     def parent_cate_id(self, catype, name):
         """查询某项类别的父类id"""
         castr = self.types[catype]
         parent_dict = getattr(self, castr + '_parent')
 
-        if not isinstance(name, types.IntType):
+        if not isinstance(name, int):
             catemap_dict = getattr(self, castr + '_catemap')
             return parent_dict[catemap_dict[name]]
         return parent_dict[name]

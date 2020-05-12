@@ -2,8 +2,10 @@
 import datetime
 import copy
 import types
+from decimal import Decimal
 import wx
-import wx.gizmos as gizmos
+import wx.lib.agw.hypertreelist as HTL
+import wx.lib.agw.ultimatelistctrl as ULC
 import wx.lib.mixins.listctrl as listmix
 from ui import logfile, statpanel, storage
 import gettext
@@ -16,7 +18,7 @@ class CategoryPanel(wx.Panel):
         wx.Panel.__init__(self, parent, -1, style=0)
         self.parent = parent
         sizer = wx.BoxSizer(wx.VERTICAL)
-        self.tree = gizmos.TreeListCtrl(self, -1, style=wx.TR_DEFAULT_STYLE | wx.TR_FULL_ROW_HIGHLIGHT | wx.TR_HIDE_ROOT)
+        self.tree = HTL.HyperTreeList(self, -1, style=wx.TR_DEFAULT_STYLE | wx.TR_FULL_ROW_HIGHLIGHT | wx.TR_HIDE_ROOT)
         sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL)
 
         self.init()
@@ -40,49 +42,49 @@ class CategoryPanel(wx.Panel):
 
     def get_all_children(self, parent):
         ret = []
-        child, cookie = self.tree.GetFirstChild(parent)
+        child, cookie = self.tree.main_win.GetFirstChild(parent)
         if not child:
             return ret
         ret.append(child)
         while True:
-            other, cookie = self.tree.GetNextChild(parent, cookie)
+            other, cookie = self.tree.main_win.GetNextChild(parent, cookie)
             if not other:
                 return ret
             ret.append(other)
 
     def load(self, cate):
-        self.tree.DeleteAllItems()
-        self.root = self.tree.AddRoot("Root")
-        self.tree.SetItemText(self.root, "1", 1)
-        self.tree.SetPyData(self.root, None)
+        self.tree.main_win.DeleteAllItems()
+        self.root = self.tree.main_win.AddRoot("分类")
+        self.tree.main_win.SetItemText(self.root, "1", 1)
+        self.tree.main_win.SetPyData(self.root, None)
 
         for root in [cate.payout_tree, cate.income_tree, cate.surplus_tree]:
-            child = self.tree.AppendItem(self.root, root.name)
-            self.tree.SetItemText(child, str(root.month_num), 1)
-            self.tree.SetItemText(child, str(root.day_num), 2)
-            self.tree.SetPyData(child, {'id': root.id})
+            child = self.tree.main_win.AppendItem(self.root, root.name)
+            self.tree.main_win.SetItemText(child, str(root.month_num), 1)
+            self.tree.main_win.SetItemText(child, str(root.day_num), 2)
+            self.tree.main_win.SetPyData(child, {'id': root.id})
 
             for ch in root.childs:
-                c1 = self.tree.AppendItem(child, ch.name)
-                self.tree.SetItemText(c1, str(ch.month_num), 1)
-                self.tree.SetItemText(c1, str(ch.day_num), 2)
-                self.tree.SetPyData(c1, {'id': ch.id})
+                c1 = self.tree.main_win.AppendItem(child, ch.name)
+                self.tree.main_win.SetItemText(c1, str(ch.month_num), 1)
+                self.tree.main_win.SetItemText(c1, str(ch.day_num), 2)
+                self.tree.main_win.SetPyData(c1, {'id': ch.id})
                 for ch2 in ch.childs:
-                    c2 = self.tree.AppendItem(c1, ch2.name)
-                    self.tree.SetItemText(c2, str(ch2.month_num), 1)
-                    self.tree.SetItemText(c2, str(ch2.day_num), 2)
-                    self.tree.SetPyData(c2, {'id': ch2.id})
+                    c2 = self.tree.main_win.AppendItem(c1, ch2.name)
+                    self.tree.main_win.SetItemText(c2, str(ch2.month_num), 1)
+                    self.tree.main_win.SetItemText(c2, str(ch2.day_num), 2)
+                    self.tree.main_win.SetPyData(c2, {'id': ch2.id})
 
         # self.tree.ExpandAll(self.root)
-        self.tree.Expand(self.root)
+        self.tree.main_win.Expand(self.root)
         for x in self.get_all_children(self.root):
-            self.tree.Expand(x)
+            self.tree.main_win.Expand(x)
 
     def OnPopupMenu(self, event):
         pt = event.GetPosition()
         test = self.tree.HitTest(pt)
         if test[0]:
-            self.tree.SelectItem(test[0])
+            self.tree.main_win.SelectItem(test[0])
 
         if not hasattr(self, "ID_POPUP_DEL"):
             self.ID_POPUP_DEL = wx.NewIdRef()
@@ -97,9 +99,9 @@ class CategoryPanel(wx.Panel):
 
     def OnItemActivated(self, event):
         try:
-            data = self.tree.GetPyData(event.GetItem())
+            data = self.tree.main_win.GetPyData(event.GetItem())
         except:
-            data = self.tree.GetPyData(self.currentItem)
+            data = self.tree.main_win.GetPyData(self.currentItem)
 
         frame = self.parent.parent
         if data['id'] > 0:
@@ -121,7 +123,7 @@ class CategoryPanel(wx.Panel):
                 frame.cateedit_dialog(ready)
 
     def OnCategoryDel(self, event):
-        data = self.tree.GetPyData(self.currentItem)
+        data = self.tree.main_win.GetPyData(self.currentItem)
         if not data or data['id'] <= 0:
             logfile.info("category data invalid.")
             return
@@ -198,7 +200,7 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
 
         box = wx.BoxSizer(wx.HORIZONTAL)
         tday = datetime.date.today()
-        items = [str(x) for x in range(2009, 2020)]
+        items = [str(x) for x in range(2009, 2021)]
         self.year = wx.ComboBox(self, 500, str(tday.year), (60, 50), (80, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
         items = [str(x) for x in range(1, 13)]
         self.month = wx.ComboBox(self, 500, str(tday.month), (60, 50), (60, -1), items, wx.CB_DROPDOWN | wx.CB_READONLY)
@@ -219,7 +221,11 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, border=2)
-        self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.fontSize = 12
+        f = wx.Font(self.fontSize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self.list = ULC.UltimateListCtrl(self, wx.ID_ANY, agwStyle=ULC.ULC_REPORT | ULC.ULC_VRULES | ULC.ULC_HRULES | ULC.ULC_SINGLE_SEL | ULC.ULC_HAS_VARIABLE_ROW_HEIGHT)
+        self.list.SetFont(f)
+
         sizer.Add(self.list, 1, wx.EXPAND | wx.ALL)
 
         self.SetSizer(sizer)
@@ -280,12 +286,16 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
         else:
             mytype = 1
             othertype = 0
-
+        if year == '':
+            year = '2009'
         sql = "select * from capital where year=%s and month=%s and type=%d order by day,id" % (year, month, mytype)
+        print('sql:', sql)
         logfile.info(sql)
         rets = self.parent.parent.db.query(sql)
-        numall = 0
+        print('rets:', str(rets))
+        numall = 0.00
         if rets:
+            print('I am here!')
             for row in rets:
                 mytime = '%d-%02d-%02d' % (row['year'], row['month'], row['day'])
                 item = self.list.InsertStringItem(0, mytime)
@@ -314,9 +324,10 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
                     self.itemDataMap[row['id']] = [mytime, cate, str(row['num']), cyclestr.encode('utf-8'),
                                                    row['explain']]
 
-                numall += row['num']
+                numall = Decimal(str(numall)) # multiple float precision
+                numall += Decimal(str(row['num']))
             # self.total.SetValue(str(numall))
-            self.total.SetLabel(str(numall))
+            self.total.SetLabel(str(float(numall)))
         else:
             # self.total.SetValue('0')
             self.total.SetLabel('0')
@@ -328,9 +339,9 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
             if not val:
                 val = 0
             if mytype == 0:  # payout
-                self.surplus.SetLabel(str(val - numall))
+                self.surplus.SetLabel(str(float(val) - float(numall)))
             else:
-                self.surplus.SetLabel(str(numall - val))
+                self.surplus.SetLabel(str(float(numall) - float(val)))
 
     def GetListCtrl(self):
         return self.list
@@ -383,6 +394,7 @@ class ItemListPanel(wx.Panel, listmix.ColumnSorterMixin):
         self.parent.parent.reload()
 
     def OnItemSelected(self, event):
+        print('event:', event)
         self.currentItem = event.m_itemIndex
         event.Skip()
 
@@ -405,7 +417,10 @@ class CycleListPanel(wx.Panel):
         self.parent = parent
 
         sizer = wx.BoxSizer(wx.VERTICAL)
+        self.fontSize = 12
+        f = wx.Font(self.fontSize, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
         self.list = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.list.SetFont(f)
         sizer.Add(self.list, 1, wx.EXPAND | wx.ALL)
 
         self.SetSizer(sizer)
@@ -459,13 +474,13 @@ class CycleListPanel(wx.Panel):
                     sql = "delete from recycle where id=" + str(row['id'])
                     self.parent.parent.db.execute(sql)
                     continue
-                item = self.list.InsertStringItem(0, typestr)
+                item = self.list.InsertItem(0, typestr)
                 # self.list.SetStringItem(item, 0, storage.catetypes[row['type']])
-                self.list.SetStringItem(item, 1, cate)
-                self.list.SetStringItem(item, 2, str(row['num']))
-                self.list.SetStringItem(item, 3, storage.payways[row['payway']])
-                self.list.SetStringItem(item, 4, storage.cycles[row['addtime']])
-                self.list.SetStringItem(item, 5, row['explain'])
+                self.list.SetItem(item, 1, cate)
+                self.list.SetItem(item, 2, str(row['num']))
+                self.list.SetItem(item, 3, storage.payways[row['payway']])
+                self.list.SetItem(item, 4, storage.cycles[row['addtime']])
+                self.list.SetItem(item, 5, row['explain'])
 
                 self.list.SetItemData(item, row['id'])
 
@@ -524,6 +539,7 @@ class CycleListPanel(wx.Panel):
         self.parent.parent.reload()
 
     def OnItemSelected(self, event):
+        print('event:', event)
         self.currentItem = event.m_itemIndex
         event.Skip()
 

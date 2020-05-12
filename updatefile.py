@@ -4,7 +4,7 @@ import version
 
 
 def sumfile(filename):
-    m = md5.new()
+    m = md5()
     fobj = open(filename, 'rb')
     while True:
         d = fobj.read(8086)

@@ -3,8 +3,8 @@ import os
 import sys
 import copy
 import time
-import types
 import subprocess
+import webbrowser
 import wx
 from wx import adv
 import threading
@@ -26,8 +26,8 @@ _ = gettext.gettext
 
 class MainFrame (wx.Frame):
     def __init__(self, parent, id, title, cf):
-        wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(1000, 600),
-                          name=u'YouMoney', style=wx.DEFAULT_FRAME_STYLE)
+        wx.Frame.__init__(self, parent, id, title, wx.DefaultPosition, wx.Size(1400, 800),
+                          name=u'YouMoney', style=wx.DEFAULT_DIALOG_STYLE)
         config.cf = cf
         self.rundir = os.path.dirname(os.path.abspath(sys.argv[0]))
         self.bmpdir = os.path.join(self.rundir, 'images')
@@ -504,7 +504,7 @@ class MainFrame (wx.Frame):
                 try:
                     self.db.execute_param(sql, (item['cate'], parent, type, item['id'],))
                 except Exception as e:
-                    wx.MessageBox(_('Change category failture:') + str(e), _('Change category information'),
+                    wx.MessageBox(_('Change category failure:') + str(e), _('Change category information'),
                                   wx.OK | wx.ICON_INFORMATION)
                 else:
                     self.reload()
@@ -744,12 +744,12 @@ class MainFrame (wx.Frame):
 
     def OnAboutInfo(self, event):
         info = wx.adv.AboutDialogInfo()
-        info.Name = u"YouMoney"
-        info.Version = version.VERSION
-        info.Copyright = "(C) 2010 zhaoweikid"
-        info.Description = wordwrap(_("YouMoney is a opensource personal finance software write by Python language.") + '\n', 350, wx.ClientDC(self))
-        info.WebSite = ("http://code.google.com/p/youmoney", _("YouMoney home page"))
-        info.Developers = ["zhaoweikid"]
+        info.SetName = u"YouMoney"
+        info.SetVersion = version.VERSION
+        info.SetCopyright = "(C) 2010 zhaoweikid"
+        info.SetDescription = wordwrap(_("YouMoney is a opensource personal finance software write by Python language.") + '\n', 350, wx.ClientDC(self))
+        info.WebSite = ("", _("YouMoney home page"))
+        info.SetDevelopers = ["zhaoweikid"]
 
         info.License = wordwrap("GPL", 500, wx.ClientDC(self))
         wx.adv.AboutBox(info)
@@ -781,7 +781,7 @@ class MainFrame (wx.Frame):
         dlg = dialogs.UpdateDialog(self, event.version)
         dlg.CenterOnScreen()
         if dlg.ShowModal() == wx.ID_OK:
-            webbrowser.open('http://code.google.com/p/youmoney/')
+            webbrowser.open('') # TODO: to be modified to personal website
             self.updater()
         dlg.Destroy()
 

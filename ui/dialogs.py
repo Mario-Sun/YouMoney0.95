@@ -104,7 +104,7 @@ class IncomeDialog (MySizedDialog):
                 'explain': self.explain.GetValue(),
                 'reuse': self.reuse.GetValue(),
                 'mode': self.data['mode']}
-        if self.data.has_key('id'):
+        if 'id' in self.data:
             data['id'] = self.data['id']
         return data
 
@@ -346,7 +346,7 @@ class UpdateDialog (MySizedDialog):
         panel.SetSizerType("vertical")
 
         wx.StaticText(panel, -1, _('Found new version:') + ' YouMoney-%s' % version)
-        hl.HyperLinkCtrl(panel, wx.ID_ANY, _("Open download page"), URL="http://code.google.com/p/youmoney/")
+        hl.HyperLinkCtrl(panel, wx.ID_ANY, _("Open download page"), URL="http://code.google.com/p/youmoney/")   #TODO:need update
         wx.StaticText(panel, -1, _('Click OK to start the automatic update.'))
                 
         self.SetButtonSizer(self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL))
@@ -709,7 +709,7 @@ class SyncDialog (MySizedDialog):
             if vals['password1'] != vals['password2']:
                 dlg.set_warn(_('Different password.'))
                 continue
-            url = 'http://%s/sync?action=useradd&ident=%s&user=%s&pass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['password1']))
+            url = 'http://%s/sync?action=useradd&ident=%s&user=%s&pass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['password1'])) #Fixme: to be fixed
             try:
                 resp = urllib.request.urlopen(url)
                 s = resp.read()
@@ -755,7 +755,7 @@ class SyncDialog (MySizedDialog):
                 dlg.set_warn(_('Different password.'))
                 continue
 
-            url = 'http://%s/sync?action=usermodify&ident=%s&user=%s&pass=%s&newpass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['oldpass']), urllib.request.quote(vals['password1']))
+            url = 'http://%s/sync?action=usermodify&ident=%s&user=%s&pass=%s&newpass=%s' % (self.conf['server'], self.conf['id'], urllib.request.quote(vals['username']), urllib.request.quote(vals['oldpass']), urllib.request.quote(vals['password1'])) # fixme: to be fixed
  
             resp = urllib.request.urlopen(url)
             s = resp.read()

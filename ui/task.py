@@ -6,6 +6,9 @@ import socketserver
 import wx
 from ui import logfile, update, event
 import version
+import gettext
+
+_ = gettext.gettext
 
 # task: {'id':xx, 'type':xxx}
 taskq  = queue.Queue()
